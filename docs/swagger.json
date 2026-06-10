@@ -18,6 +18,54 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
+        "/accounts": {
+            "post": {
+                "description": "Create a new bank account record.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Account payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Account"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/examples": {
             "get": {
                 "description": "Retrieve a list of all example records.",
@@ -566,6 +614,87 @@
                 "name": {
                     "type": "string",
                     "example": "John Doe"
+                }
+            }
+        },
+        "handlers.CreateAccountRequest": {
+            "type": "object",
+            "required": [
+                "account_type",
+                "citizen_id",
+                "initial_balance",
+                "owner_name",
+                "phone_number"
+            ],
+            "properties": {
+                "account_type": {
+                    "type": "string",
+                    "enum": [
+                        "SAVING",
+                        "CURRENT"
+                    ]
+                },
+                "citizen_id": {
+                    "type": "string"
+                },
+                "initial_balance": {
+                    "type": "number"
+                },
+                "owner_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Account": {
+            "type": "object",
+            "required": [
+                "account_number",
+                "account_type",
+                "citizen_id",
+                "owner_name",
+                "phone_number"
+            ],
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "account_type": {
+                    "type": "string",
+                    "enum": [
+                        "SAVING",
+                        "CURRENT"
+                    ]
+                },
+                "balance": {
+                    "type": "number"
+                },
+                "citizen_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "owner_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "ACTIVE",
+                        "CLOSED"
+                    ]
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         }

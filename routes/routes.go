@@ -8,7 +8,7 @@ import (
 	"github.com/krizad/go-gin-api/handlers"
 )
 
-func Setup(r *gin.Engine, eh *handlers.ExampleHandler) {
+func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandler) {
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(302, "/swagger/index.html")
 	})
@@ -28,6 +28,13 @@ func Setup(r *gin.Engine, eh *handlers.ExampleHandler) {
 			examples.PUT("/:id", eh.UpdateExample)
 			examples.PATCH("/:id", eh.PatchExample)
 			examples.DELETE("/:id", eh.DeleteExample)
+		}
+
+		accounts := api.Group("/accounts")
+		{
+			accounts.GET("", ah.GetAccountList)
+			accounts.POST("", ah.CreateAccount)
+			accounts.GET("/:account_number", ah.GetAccountByNumber)
 		}
 	}
 

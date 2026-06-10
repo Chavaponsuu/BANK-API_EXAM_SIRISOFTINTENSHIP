@@ -10,15 +10,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	_ "github.com/krizad/go-gin-api/docs"
 	"github.com/krizad/go-gin-api/config"
 	"github.com/krizad/go-gin-api/db"
+	_ "github.com/krizad/go-gin-api/docs"
 	"github.com/krizad/go-gin-api/handlers"
 	"github.com/krizad/go-gin-api/middleware"
 	"github.com/krizad/go-gin-api/repositories"
 	"github.com/krizad/go-gin-api/routes"
 	"github.com/krizad/go-gin-api/services"
 )
+
+// type application struct {
+// 	models models.
+// 	// jwtSecret string
+// }
 
 //	@title			Go Gin Example API
 //	@version		1.0
@@ -62,11 +67,18 @@ func main() {
 	r.Use(middleware.Logger())
 	r.Use(middleware.CORS())
 
+	// Example handler setup
 	repo := repositories.NewExampleRepository(db.DB)
 	svc := services.NewExampleService(repo)
 	exampleHandler := handlers.NewExampleHandler(svc)
+	transacRepo := repositories.NewTransactionRepository(db.DB)
+	// Account handler setup
+	accountRepo := repositories.NewAccountRepository(db.DB)
+	// transactionRepo := repositories.NewTransactionRepository(db.DB)
+	accountSvc := services.NewAccountService(accountRepo, transacRepo)
+	accountHandler := handlers.NewAccountHandler(accountSvc)
 
-	routes.Setup(r, exampleHandler)
+	routes.Setup(r, exampleHandler, accountHandler)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

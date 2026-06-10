@@ -78,6 +78,63 @@ definitions:
     - email
     - name
     type: object
+  handlers.CreateAccountRequest:
+    properties:
+      account_type:
+        enum:
+        - SAVING
+        - CURRENT
+        type: string
+      citizen_id:
+        type: string
+      initial_balance:
+        type: number
+      owner_name:
+        type: string
+      phone_number:
+        type: string
+    required:
+    - account_type
+    - citizen_id
+    - initial_balance
+    - owner_name
+    - phone_number
+    type: object
+  models.Account:
+    properties:
+      account_number:
+        type: string
+      account_type:
+        enum:
+        - SAVING
+        - CURRENT
+        type: string
+      balance:
+        type: number
+      citizen_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      owner_name:
+        type: string
+      phone_number:
+        type: string
+      status:
+        enum:
+        - ACTIVE
+        - CLOSED
+        type: string
+      updated_at:
+        type: string
+    required:
+    - account_number
+    - account_type
+    - citizen_id
+    - owner_name
+    - phone_number
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -92,6 +149,38 @@ info:
   title: Go Gin Example API
   version: "1.0"
 paths:
+  /accounts:
+    post:
+      consumes:
+      - application/json
+      description: Create a new bank account record.
+      parameters:
+      - description: Account payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Account'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new account
+      tags:
+      - accounts
   /examples:
     get:
       description: Retrieve a list of all example records.
