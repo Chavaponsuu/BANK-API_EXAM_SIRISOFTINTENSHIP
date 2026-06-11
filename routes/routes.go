@@ -37,7 +37,9 @@ func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandl
 			accounts.GET("/:account_number", ah.GetAccountByNumber)
 			accounts.POST("/:account_number/deposit", th.Deposit)
 			accounts.POST("/:account_number/withdraw", th.Withdraw)
-			accounts.POST("/:account_number/transactions", th.GetTransactionHistory)
+			accounts.GET("/:account_number/transactions", th.GetTransactionHistory)
+
+			accounts.PATCH("/:account_number/close", ah.CloseAccountHandler)
 		}
 	}
 

@@ -18,20 +18,20 @@ func NewTransactionHandler(service services.TransactionService) *TransactionHand
 }
 
 // Deposit godoc
-// @Summary      Deposit funds into an account
-// @Description  Deposit a specified amount into the account with the given account number
-// @Tags         transactions
-// @Accept       json
-// @Produce      json
-// @Param        account_number  path      string               true  "Account Number"
-// @Param        request         body      dto.DepositRequest   true  "Deposit Request"
-// @Success      200             {object}  dto.TransactionResponse
-// @Failure      400             {object}  dto.ErrorResponse
-// @Failure      404             {object}  dto.ErrorResponse
-// @Failure      409             {object}  dto.ErrorResponse
-// @Failure      500             {object}  dto.ErrorResponse
-// @Router       /accounts/{account_number}/deposit [post]
-
+//
+//	@summary		Deposit money into an account
+//	@description	Deposit a specified amount into the account. Creates a DEPOSIT transaction and updates account balance atomically.
+//	@tags			transactions
+//	@accept			json
+//	@produce		json
+//	@param			account_number	path		string						true	"Account Number (10 digits)"	example:"0000000001"
+//	@param			request			body		dto.TransactionRequest		true	"Deposit request payload"
+//	@success		200				{object}	dto.BaseResponse{data=dto.TransactionResponse}	"Deposit successful"
+//	@failure		400				{object}	dto.BaseResponse	"Amount must be greater than 0"
+//	@failure		404				{object}	dto.BaseResponse	"Account not found"
+//	@failure		409				{object}	dto.BaseResponse	"Account is not active or already closed"
+//	@failure		500				{object}	dto.BaseResponse	"Failed to update account balance"
+//	@router			/api/v1/accounts/{account_number}/deposit [post]
 func (t *TransactionHandler) Deposit(c *gin.Context) {
 	accountNumber := c.Param("account_number")
 	var req dto.TransactionRequest
@@ -57,28 +57,23 @@ func (t *TransactionHandler) Deposit(c *gin.Context) {
 	}
 
 	dto.OK(c, dto.ToTransactionResponse(deposit))
-	// if err := c.ShouldBindJSON(&req); err != nil {
-	// 	dto.Error(c, http.StatusBadRequest, err.Error())
-	// 	return
-	// }
-
 }
 
 // Withdraw godoc
-// @Summary      Withdraw funds from an account
-// @Description  Withdraw a specified amount from the account with the given account number
-// @Tags         transactions
-// @Accept       json
-// @Produce      json
-// @Param        account_number  path      string                true  "Account Number"
-// @Param        request         body      dto.WithdrawRequest   true  "Withdraw Request"
-// @Success      200             {object}  dto.TransactionResponse
-// @Failure      400             {object}  dto.ErrorResponse
-// @Failure      404             {object}  dto.ErrorResponse
-// @Failure      409             {object}  dto.ErrorResponse
-// @Failure      500             {object}  dto.ErrorResponse
-// @Router       /accounts/{account_number}/withdraw [post]
-
+//
+//	@summary		Withdraw money from an account
+//	@description	Withdraw a specified amount from the account. Validates sufficient balance, creates a WITHDRAW transaction, and updates account balance atomically.
+//	@tags			transactions
+//	@accept			json
+//	@produce		json
+//	@param			account_number	path		string						true	"Account Number (10 digits)"	example:"0000000001"
+//	@param			request			body		dto.TransactionRequest		true	"Withdraw request payload"
+//	@success		200				{object}	dto.BaseResponse{data=dto.TransactionResponse}	"Withdrawal successful"
+//	@failure		400				{object}	dto.BaseResponse	"Insufficient balance or amount must be greater than 0"
+//	@failure		404				{object}	dto.BaseResponse	"Account not found"
+//	@failure		409				{object}	dto.BaseResponse	"Account is not active or already closed"
+//	@failure		500				{object}	dto.BaseResponse	"Failed to update account balance"
+//	@router			/api/v1/accounts/{account_number}/withdraw [post]
 func (t *TransactionHandler) Withdraw(c *gin.Context) {
 	accountNumber := c.Param("account_number")
 	var req dto.TransactionRequest
@@ -106,6 +101,20 @@ func (t *TransactionHandler) Withdraw(c *gin.Context) {
 	dto.OK(c, dto.ToTransactionResponse(withdraw))
 }
 
+// GetTransactionHistory godoc
+//
+//	@summary		Get transaction history of an account
+//	@description	Retrieve paginated transaction history for an account, ordered by newest first (created_at DESC).
+//	@tags			transactions
+//	@produce		json
+//	@param			account_number	path		string	true	"Account Number (10 digits)"	example:"0000000001"
+//	@param			page			query		int		false	"Page number (default: 1, min: 1)"	default(1)
+//	@param			limit			query		int		false	"Items per page (default: 10, max: 100)"	default(10)
+//	@success		200				{object}	dto.BaseResponse{data=[]dto.TransactionResponse,meta=dto.Meta}	"Transaction history with pagination"
+//	@failure		400				{object}	dto.BaseResponse	"Invalid account_number format or pagination parameters"
+//	@failure		404				{object}	dto.BaseResponse	"Account not found"
+//	@failure		500				{object}	dto.BaseResponse	"Failed to get transaction history"
+//	@router			/api/v1/accounts/{account_number}/transactions [get]
 func (t *TransactionHandler) GetTransactionHistory(c *gin.Context) {
 
 	accountNumber := c.Param("account_number")

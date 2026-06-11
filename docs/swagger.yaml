@@ -1,5 +1,22 @@
 basePath: /api/v1
 definitions:
+  dto.AccountResponse:
+    properties:
+      account_number:
+        type: string
+      account_type:
+        example: SAVING
+        type: string
+      balance:
+        example: 1000
+        type: number
+      owner_name:
+        example: John Doe
+        type: string
+      status:
+        example: ACTIVE
+        type: string
+    type: object
   dto.BaseResponse:
     properties:
       data: {}
@@ -12,6 +29,40 @@ definitions:
         $ref: '#/definitions/dto.Meta'
       success:
         type: boolean
+    type: object
+  dto.CloseAccountResponse:
+    properties:
+      account_number:
+        type: string
+      status:
+        type: string
+    type: object
+  dto.CreateAccountRequest:
+    properties:
+      account_type:
+        enum:
+        - SAVING
+        - CURRENT
+        example: SAVING
+        type: string
+      citizen_id:
+        example: "1234567890123"
+        type: string
+      initial_balance:
+        example: 1000
+        minimum: 0
+        type: number
+      owner_name:
+        example: John Doe
+        type: string
+      phone_number:
+        example: "0812345678"
+        type: string
+    required:
+    - account_type
+    - citizen_id
+    - owner_name
+    - phone_number
     type: object
   dto.CreateExampleRequest:
     properties:
@@ -66,6 +117,30 @@ definitions:
         example: John Doe
         type: string
     type: object
+  dto.TransactionRequest:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+    type: object
+  dto.TransactionResponse:
+    properties:
+      amount:
+        type: number
+      balance_after:
+        type: number
+      balance_before:
+        type: number
+      created_at:
+        type: string
+      description:
+        type: string
+      transaction_ref:
+        type: string
+      transaction_type:
+        type: string
+    type: object
   dto.UpdateExampleRequest:
     properties:
       email:
@@ -77,63 +152,6 @@ definitions:
     required:
     - email
     - name
-    type: object
-  handlers.CreateAccountRequest:
-    properties:
-      account_type:
-        enum:
-        - SAVING
-        - CURRENT
-        type: string
-      citizen_id:
-        type: string
-      initial_balance:
-        type: number
-      owner_name:
-        type: string
-      phone_number:
-        type: string
-    required:
-    - account_type
-    - citizen_id
-    - initial_balance
-    - owner_name
-    - phone_number
-    type: object
-  models.Account:
-    properties:
-      account_number:
-        type: string
-      account_type:
-        enum:
-        - SAVING
-        - CURRENT
-        type: string
-      balance:
-        type: number
-      citizen_id:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: integer
-      owner_name:
-        type: string
-      phone_number:
-        type: string
-      status:
-        enum:
-        - ACTIVE
-        - CLOSED
-        type: string
-      updated_at:
-        type: string
-    required:
-    - account_number
-    - account_type
-    - citizen_id
-    - owner_name
-    - phone_number
     type: object
 host: localhost:8080
 info:
@@ -149,38 +167,313 @@ info:
   title: Go Gin Example API
   version: "1.0"
 paths:
-  /accounts:
+  /api/v1/accounts:
+    get:
+      description: Retrieve a paginated list of all accounts ordered by ID.
+      parameters:
+      - default: 1
+        description: 'Page number (default: 1, min: 1)'
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 'Items per page (default: 10, max: 100)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of accounts with pagination metadata
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.AccountResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/dto.Meta'
+              type: object
+        "400":
+          description: Invalid page or limit parameters
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "500":
+          description: Failed to get account list
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: List all accounts with pagination
+      tags:
+      - accounts
     post:
       consumes:
       - application/json
-      description: Create a new bank account record.
+      description: Create a new bank account record. If initial_balance > 0, creates
+        a DEPOSIT transaction atomically.
       parameters:
       - description: Account payload
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateAccountRequest'
+          $ref: '#/definitions/dto.CreateAccountRequest'
       produces:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Account created successfully
           schema:
-            $ref: '#/definitions/models.Account'
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AccountResponse'
+              type: object
         "400":
-          description: Bad Request
+          description: 'Invalid input: citizen_id must be 13 digits, account_type
+            must be SAVING or CURRENT, or balance cannot be negative'
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/dto.BaseResponse'
+        "409":
+          description: Citizen ID already exists
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
         "500":
-          description: Internal Server Error
+          description: Failed to create account
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/dto.BaseResponse'
       summary: Create a new account
       tags:
       - accounts
+  /api/v1/accounts/{account_number}:
+    get:
+      description: Retrieve account details by 10-digit account number.
+      parameters:
+      - description: Account Number (10 digits)
+        in: path
+        name: account_number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account found
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AccountResponse'
+              type: object
+        "400":
+          description: Invalid account_number format
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "404":
+          description: Account not found
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: Get account by account number
+      tags:
+      - accounts
+  /api/v1/accounts/{account_number}/close:
+    patch:
+      description: Change account status from ACTIVE to CLOSED. Closed accounts cannot
+        perform transactions (deposit/withdraw).
+      parameters:
+      - description: Account Number (10 digits)
+        in: path
+        name: account_number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account closed successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CloseAccountResponse'
+              type: object
+        "400":
+          description: Invalid account number format
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "404":
+          description: Account not found
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "409":
+          description: Account is already closed
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "500":
+          description: Failed to close account
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: Close an account
+      tags:
+      - accounts
+  /api/v1/accounts/{account_number}/deposit:
+    post:
+      consumes:
+      - application/json
+      description: Deposit a specified amount into the account. Creates a DEPOSIT
+        transaction and updates account balance atomically.
+      parameters:
+      - description: Account Number (10 digits)
+        in: path
+        name: account_number
+        required: true
+        type: string
+      - description: Deposit request payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deposit successful
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TransactionResponse'
+              type: object
+        "400":
+          description: Amount must be greater than 0
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "404":
+          description: Account not found
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "409":
+          description: Account is not active or already closed
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "500":
+          description: Failed to update account balance
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: Deposit money into an account
+      tags:
+      - transactions
+  /api/v1/accounts/{account_number}/transactions:
+    get:
+      description: Retrieve paginated transaction history for an account, ordered
+        by newest first (created_at DESC).
+      parameters:
+      - description: Account Number (10 digits)
+        in: path
+        name: account_number
+        required: true
+        type: string
+      - default: 1
+        description: 'Page number (default: 1, min: 1)'
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 'Items per page (default: 10, max: 100)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Transaction history with pagination
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.TransactionResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/dto.Meta'
+              type: object
+        "400":
+          description: Invalid account_number format or pagination parameters
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "404":
+          description: Account not found
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "500":
+          description: Failed to get transaction history
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: Get transaction history of an account
+      tags:
+      - transactions
+  /api/v1/accounts/{account_number}/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: Withdraw a specified amount from the account. Validates sufficient
+        balance, creates a WITHDRAW transaction, and updates account balance atomically.
+      parameters:
+      - description: Account Number (10 digits)
+        in: path
+        name: account_number
+        required: true
+        type: string
+      - description: Withdraw request payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Withdrawal successful
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TransactionResponse'
+              type: object
+        "400":
+          description: Insufficient balance or amount must be greater than 0
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "404":
+          description: Account not found
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "409":
+          description: Account is not active or already closed
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+        "500":
+          description: Failed to update account balance
+          schema:
+            $ref: '#/definitions/dto.BaseResponse'
+      summary: Withdraw money from an account
+      tags:
+      - transactions
   /examples:
     get:
       description: Retrieve a list of all example records.

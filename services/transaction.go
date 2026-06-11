@@ -194,7 +194,7 @@ func (s *transactionService) GetTransactionHistory(ctx context.Context, accountN
 	// 2. Get account
 	account, err := s.accountRepo.GetByAccountNumber(ctx, accountNumber)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to get account: %w", err)
+		return nil, 0, errors.New("failed to get account details")
 	}
 	if account == nil {
 		return nil, 0, ErrAccountNotFound
@@ -203,7 +203,7 @@ func (s *transactionService) GetTransactionHistory(ctx context.Context, accountN
 	// 3. Get transaction history
 	transactions, total, err := s.transactionRepo.GetTxByAccountID(ctx, account.ID, page, limit)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to get transaction history: %w", err)
+		return nil, 0, errors.New("failed to get transaction history")
 	}
 
 	return transactions, total, nil

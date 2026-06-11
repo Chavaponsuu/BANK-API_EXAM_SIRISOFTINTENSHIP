@@ -20,6 +20,7 @@ type AccountService interface {
 	CreateAccount(ctx context.Context, account *models.Account) (*models.Account, error)
 	GetAccountByNumber(ctx context.Context, accountNumber string) (*models.Account, error)
 	GetAccountList(ctx context.Context, page int, limit int) ([]*models.Account, int, error)
+	CloseAccount(ctx context.Context, accountNumber string) (*models.Account, error)
 }
 
 type accountService struct {
@@ -38,6 +39,17 @@ func (s *accountService) CreateAccount(ctx context.Context, account *models.Acco
 	// 1. business validation
 	if account.Balance < 0 {
 		return nil, errors.New("balance cannot be negative")
+	}
+
+	// 2. validate citizen_id format (must be 13 digits)
+	citizenIDRegex := regexp.MustCompile(`^[0-9]{13}$`)
+	if !citizenIDRegex.MatchString(account.CitizenID) {
+		return nil, errors.New("invalid input: citizen_id must be 13 digits")
+	}
+
+	// 3. validate account_type (must be SAVING or CURRENT)
+	if account.AccountType != "SAVING" && account.AccountType != "CURRENT" {
+		return nil, errors.New("invalid input: account_type must be SAVING or CURRENT")
 	}
 
 	// ตรวจสอบว่า citizen_id ซ้ำหรือไม่
@@ -183,9 +195,48 @@ func (s *accountService) Deposit(ctx context.Context, amount float64, accountNum
 
 	// 4. Commit transaction (ถ้าทุกอย่างสำเร็จ)
 	if err = tx.Commit(); err != nil {
-		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+		return nil, fmt.Errorf("failed to commit transaction")
 	}
 
 	return transaction, nil
-
 }
+
+var (
+	ErrAccountAlreadyClosed = errors.New("account is already closed")
+)
+
+func (s *accountService) CloseAccount(ctx context.Context, accountNumber string) (*models.Account, error) {
+	if accountNumber == "" || !isValidAccountNumber(accountNumber) {
+		return nil, ErrInvalidAccountNumber
+	}
+
+	account, err := s.repo.GetByAccountNumber(ctx, accountNumber)
+	if err != nil {
+		return nil, ErrInternal
+	}
+
+	if account == nil {
+		return nil, ErrAccountNotFound
+	}
+
+	if account.Status == "CLOSED" {
+		return nil, ErrAccountAlreadyClosed
+	}
+
+	err = s.repo.UpdateStatus(ctx, accountNumber, "CLOSED")
+	if err != nil {
+		return nil, errors.New("failed to close account")
+	}
+	account.Status = "CLOSED"
+
+	return account, nil
+}
+
+// func (s *accountService) CloseAccount(ctx context.Context, account_number string) {
+// 	err := s.repo.UpdateStatus(ctx, account_number, "CLOSED")
+// 	if err != nil {
+// 		return
+
+// 	}
+
+// }
