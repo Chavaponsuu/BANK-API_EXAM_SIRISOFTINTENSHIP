@@ -186,15 +186,9 @@ func (s *transactionService) Withdraw(ctx context.Context, accountNumber string,
 
 // GetTransactionHistory ดึงประวัติธุรกรรมของบัญชี
 func (s *transactionService) GetTransactionHistory(ctx context.Context, accountNumber string, page int, limit int) ([]*models.Transaction, int, error) {
-	// 1. Validate pagination
-	if page < 1 {
-		page = 1
-	}
-	if limit < 1 {
-		limit = 10
-	}
-	if limit > 100 {
-		limit = 100
+
+	if page < 1 || limit < 1 || limit > 100 {
+		return nil, 0, errors.New("invalid account_number format")
 	}
 
 	// 2. Get account
@@ -207,7 +201,7 @@ func (s *transactionService) GetTransactionHistory(ctx context.Context, accountN
 	}
 
 	// 3. Get transaction history
-	transactions, total, err := s.transactionRepo.GetByAccountID(ctx, account.ID, page, limit)
+	transactions, total, err := s.transactionRepo.GetTxByAccountID(ctx, account.ID, page, limit)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to get transaction history: %w", err)
 	}

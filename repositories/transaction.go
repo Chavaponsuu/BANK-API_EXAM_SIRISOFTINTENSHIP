@@ -77,7 +77,7 @@ func (r *TransactionRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, transact
 }
 
 // GetByAccountID ดึงประวัติธุรกรรมของบัญชี เรียงจากใหม่ไปเก่า
-func (r *TransactionRepo) GetByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*models.Transaction, int, error) {
+func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*models.Transaction, int, error) {
 	// Get total count
 	var total int
 	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM transactions WHERE account_id = $1`, accountID).Scan(&total)

@@ -72,13 +72,16 @@ func main() {
 	svc := services.NewExampleService(repo)
 	exampleHandler := handlers.NewExampleHandler(svc)
 	transacRepo := repositories.NewTransactionRepository(db.DB)
+
 	// Account handler setup
 	accountRepo := repositories.NewAccountRepository(db.DB)
+	transacSvc := services.NewTransactionService(accountRepo, transacRepo)
 	// transactionRepo := repositories.NewTransactionRepository(db.DB)
 	accountSvc := services.NewAccountService(accountRepo, transacRepo)
+	transacHandler := handlers.NewTransactionHandler(transacSvc)
 	accountHandler := handlers.NewAccountHandler(accountSvc)
 
-	routes.Setup(r, exampleHandler, accountHandler)
+	routes.Setup(r, exampleHandler, accountHandler, transacHandler)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

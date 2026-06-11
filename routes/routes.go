@@ -8,7 +8,7 @@ import (
 	"github.com/krizad/go-gin-api/handlers"
 )
 
-func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandler) {
+func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandler, th *handlers.TransactionHandler) {
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(302, "/swagger/index.html")
 	})
@@ -35,6 +35,9 @@ func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandl
 			accounts.GET("", ah.GetAccountList)
 			accounts.POST("", ah.CreateAccount)
 			accounts.GET("/:account_number", ah.GetAccountByNumber)
+			accounts.POST("/:account_number/deposit", th.Deposit)
+			accounts.POST("/:account_number/withdraw", th.Withdraw)
+			accounts.POST("/:account_number/transactions", th.GetTransactionHistory)
 		}
 	}
 
