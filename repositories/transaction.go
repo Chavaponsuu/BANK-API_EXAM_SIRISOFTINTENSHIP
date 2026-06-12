@@ -24,14 +24,12 @@ func NewTransactionRepository(db *sql.DB) TransactionRepository {
 	return &TransactionRepo{db: db}
 }
 
-// GenerateTransactionRef สร้าง transaction reference ในรูปแบบ TXN<YYYYMMDD><RUNNING_NUMBER>
-// ใช้ database sequence หรือ lock เพื่อป้องกัน race condition
+
 func (r *TransactionRepo) GenerateTransactionRef(ctx context.Context, tx *sql.Tx) (string, error) {
 	now := time.Now()
-	dateStr := now.Format("20060102") // YYYYMMDD
+	dateStr := now.Format("20060102") 
 
-	// ใช้ SELECT FOR UPDATE เพื่อ lock การนับ transactions
-	// หรือใช้ SERIAL/SEQUENCE ของ PostgreSQL เพื่อความปลอดภัย
+
 	var count int
 	query := `SELECT COUNT(*) FROM transactions WHERE transaction_ref LIKE $1`
 	pattern := fmt.Sprintf("TXN%s%%", dateStr)
@@ -47,13 +45,12 @@ func (r *TransactionRepo) GenerateTransactionRef(ctx context.Context, tx *sql.Tx
 		return "", fmt.Errorf("failed to count transactions: %w", err)
 	}
 
-	// Running number เริ่มจาก 1
 	runningNumber := count + 1
 	transactionRef := fmt.Sprintf("TXN%s%04d", dateStr, runningNumber)
 	return transactionRef, nil
 }
 
-// CreateWithTx สร้าง transaction โดยใช้ database transaction
+
 func (r *TransactionRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, transaction *models.Transaction) (*models.Transaction, error) {
 	query := `INSERT INTO transactions (account_id, transaction_ref, transaction_type, amount, balance_before, balance_after, description)
 	 VALUES ($1, $2, $3, $4, $5, $6, $7)

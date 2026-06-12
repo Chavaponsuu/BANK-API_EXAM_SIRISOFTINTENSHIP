@@ -157,50 +157,6 @@ func (s *accountService) GetAccountList(ctx context.Context, page int, limit int
 
 }
 
-func (s *accountService) Deposit(ctx context.Context, amount float64, accountNumber string, description string) (*models.Transaction, error) {
-	tx, err := s.repo.BeginTx(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-		}
-	}()
-
-	account := &models.Account{}
-
-	account, err = s.GetAccountByNumber(ctx, accountNumber)
-	if err != nil {
-		return nil, err
-	}
-
-	if account.Status == "CLOSED" {
-		return nil, errors.New("account is not active")
-	}
-
-	transaction := &models.Transaction{
-		AccountID:       account.ID,
-		TransactionRef:  "",
-		TransactionType: "DEPOSIT",
-		Amount:          amount,
-		BalanceBefore:   account.Balance,
-		BalanceAfter:    account.Balance + float64(amount),
-		Description:     description,
-	}
-	_, err = s.transactionRepo.CreateWithTx(ctx, tx, transaction)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create deposit transaction: %w", err)
-	}
-
-	// 4. Commit transaction (ถ้าทุกอย่างสำเร็จ)
-	if err = tx.Commit(); err != nil {
-		return nil, fmt.Errorf("failed to commit transaction")
-	}
-
-	return transaction, nil
-}
-
 var (
 	ErrAccountAlreadyClosed = errors.New("account is already closed")
 )

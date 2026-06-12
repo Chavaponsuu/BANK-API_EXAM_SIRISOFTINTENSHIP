@@ -39,14 +39,6 @@ func ToAccountResponse(m *models.Account) *AccountResponse {
 	}
 }
 
-func ToAccountListResponse(accounts []models.Account) AccountListResponse {
-	list := make(AccountListResponse, 0, len(accounts))
-	for _, a := range accounts {
-		list = append(list, *ToAccountResponse(&a))
-	}
-	return list
-}
-
 type CloseAccountResponse struct {
 	AccountNumber string `json:"account_number"`
 	Status        string `json:"status"`

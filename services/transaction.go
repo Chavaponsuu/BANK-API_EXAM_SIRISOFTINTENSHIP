@@ -33,14 +33,14 @@ func NewTransactionService(accountRepo repositories.AccountRepository, transacti
 	}
 }
 
-// Deposit ฝากเงินเข้าบัญชี
+
 func (s *transactionService) Deposit(ctx context.Context, accountNumber string, amount float64, description string) (*models.Transaction, error) {
-	// 1. Validate amount
+	
 	if amount <= 0 {
 		return nil, ErrInvalidAmount
 	}
 
-	// 2. Begin DB Transaction ก่อน (เปลี่ยนลำดับ)
+	
 	tx, err := s.accountRepo.BeginTx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -52,7 +52,7 @@ func (s *transactionService) Deposit(ctx context.Context, accountNumber string, 
 		}
 	}()
 
-	// 3. Get account พร้อม LOCK row (FOR UPDATE)
+	
 	account, err := s.accountRepo.GetByAccountNumberWithLock(ctx, tx, accountNumber)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account: %w", err)
@@ -61,7 +61,7 @@ func (s *transactionService) Deposit(ctx context.Context, accountNumber string, 
 		return nil, ErrAccountNotFound
 	}
 
-	// 4. Check account status
+
 	if account.Status != "ACTIVE" {
 		return nil, ErrAccountNotActive
 	}
