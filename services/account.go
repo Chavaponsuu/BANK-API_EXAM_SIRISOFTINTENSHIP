@@ -24,11 +24,11 @@ type AccountService interface {
 }
 
 type accountService struct {
-	repo            *repositories.AccountRepo
-	transactionRepo *repositories.TransactionRepo
+	repo            repositories.AccountRepository
+	transactionRepo repositories.TransactionRepository
 }
 
-func NewAccountService(repo *repositories.AccountRepo, transactionRepo *repositories.TransactionRepo) AccountService {
+func NewAccountService(repo repositories.AccountRepository, transactionRepo repositories.TransactionRepository) AccountService {
 	return &accountService{
 		repo:            repo,
 		transactionRepo: transactionRepo,
@@ -231,12 +231,3 @@ func (s *accountService) CloseAccount(ctx context.Context, accountNumber string)
 
 	return account, nil
 }
-
-// func (s *accountService) CloseAccount(ctx context.Context, account_number string) {
-// 	err := s.repo.UpdateStatus(ctx, account_number, "CLOSED")
-// 	if err != nil {
-// 		return
-
-// 	}
-
-// }

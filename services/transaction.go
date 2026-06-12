@@ -22,11 +22,11 @@ type TransactionService interface {
 }
 
 type transactionService struct {
-	accountRepo     *repositories.AccountRepo
-	transactionRepo *repositories.TransactionRepo
+	accountRepo     repositories.AccountRepository
+	transactionRepo repositories.TransactionRepository
 }
 
-func NewTransactionService(accountRepo *repositories.AccountRepo, transactionRepo *repositories.TransactionRepo) TransactionService {
+func NewTransactionService(accountRepo repositories.AccountRepository, transactionRepo repositories.TransactionRepository) TransactionService {
 	return &transactionService{
 		accountRepo:     accountRepo,
 		transactionRepo: transactionRepo,

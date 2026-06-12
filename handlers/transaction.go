@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/krizad/go-gin-api/dto"
@@ -43,13 +45,18 @@ func (t *TransactionHandler) Deposit(c *gin.Context) {
 
 	deposit, err := t.service.Deposit(c.Request.Context(), accountNumber, req.Amount, req.Description)
 	if err != nil {
-		switch err.Error() {
-		case "amount must be greater than 0":
+		switch {
+		case err.Error() == "amount must be greater than 0",
+			strings.Contains(err.Error(), "failed to create transaction"):
 			dto.Error(c, http.StatusBadRequest, err.Error())
-		case "account not found":
+
+		case err.Error() == "account not found":
 			dto.Error(c, http.StatusNotFound, err.Error())
-		case "account is not active", "account is already closed":
+
+		case err.Error() == "account is not active",
+			err.Error() == "account is already closed":
 			dto.Error(c, http.StatusConflict, err.Error())
+
 		default:
 			dto.Error(c, http.StatusInternalServerError, err.Error())
 		}
@@ -85,17 +92,25 @@ func (t *TransactionHandler) Withdraw(c *gin.Context) {
 
 	withdraw, err := t.service.Withdraw(c.Request.Context(), accountNumber, req.Amount, req.Description)
 	if err != nil {
-		switch err.Error() {
-		case "insufficient balance":
+		fmt.Print(err.Error())
+		switch {
+		case err.Error() == "amount must be greater than 0",
+			strings.Contains(err.Error(), "failed to create transaction"), err.Error() == "insufficient balance":
 			dto.Error(c, http.StatusBadRequest, err.Error())
-		case "account not found":
+
+		case err.Error() == "account not found":
 			dto.Error(c, http.StatusNotFound, err.Error())
-		case "account is not active", "account is already closed", "insufficient funds":
+
+		case err.Error() == "account is not active",
+			err.Error() == "account is already closed":
 			dto.Error(c, http.StatusConflict, err.Error())
+
 		default:
 			dto.Error(c, http.StatusInternalServerError, err.Error())
+
 		}
 		return
+
 	}
 
 	dto.OK(c, dto.ToTransactionResponse(withdraw))
@@ -118,8 +133,8 @@ func (t *TransactionHandler) Withdraw(c *gin.Context) {
 func (t *TransactionHandler) GetTransactionHistory(c *gin.Context) {
 
 	accountNumber := c.Param("account_number")
-	page := 1
-	limit := 1
+	page := -1
+	limit := -1
 	if p := c.Query("page"); p != "" {
 		if val, err := strconv.Atoi(p); err == nil && val > 0 {
 			page = val

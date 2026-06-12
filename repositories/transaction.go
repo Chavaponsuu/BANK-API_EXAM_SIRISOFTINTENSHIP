@@ -12,14 +12,15 @@ import (
 type TransactionRepository interface {
 	CreateWithTx(ctx context.Context, tx *sql.Tx, transaction *models.Transaction) (*models.Transaction, error)
 	GenerateTransactionRef(ctx context.Context, tx *sql.Tx) (string, error)
-	GetByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*models.Transaction, int, error)
+	// GetByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*models.Transaction, int, error)
+	GetTxByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*models.Transaction, int, error)
 }
 
 type TransactionRepo struct {
 	db *sql.DB
 }
 
-func NewTransactionRepository(db *sql.DB) *TransactionRepo {
+func NewTransactionRepository(db *sql.DB) TransactionRepository {
 	return &TransactionRepo{db: db}
 }
 

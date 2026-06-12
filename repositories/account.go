@@ -17,7 +17,7 @@ type AccountRepository interface {
 	BeginTx(ctx context.Context) (*sql.Tx, error)
 	GetByAccountNumber(ctx context.Context, accountNumber string) (*models.Account, error)
 	GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*models.Account, error)
-	List(ctx context.Context, page int, limit int) ([]*models.Account, int, error)
+	GetByAccountList(ctx context.Context, page int, limit int) ([]*models.Account, int, error)
 	UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accountID int64, newBalance float64) error
 	UpdateStatus(ctx context.Context, accountNumber string, status string) error
 }
@@ -26,7 +26,7 @@ type AccountRepo struct {
 	db *sql.DB
 }
 
-func NewAccountRepository(db *sql.DB) *AccountRepo {
+func NewAccountRepository(db *sql.DB) AccountRepository {
 	return &AccountRepo{db: db}
 }
 
@@ -205,18 +205,6 @@ func (r *AccountRepo) GetByAccountList(ctx context.Context, page int, limit int)
 	}
 
 	return accountList, total, nil
-}
-
-func (r *AccountRepo) Deposit(ctx context.Context, tx *sql.Tx, accountNumber string, balance int) error {
-	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-	defer cancel()
-
-	query := `UPDATE accounts SET balance = $1 WHERE account_number = $2`
-
-	_, err := tx.Exec(query, balance, accountNumber)
-
-	return err
-
 }
 
 func (r *AccountRepo) UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accountID int64, newBalance float64) error {
