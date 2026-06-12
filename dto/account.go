@@ -9,7 +9,7 @@ type CreateAccountRequest struct {
 	OwnerName      string  `json:"owner_name" binding:"required" example:"John Doe"`
 	CitizenID      string  `json:"citizen_id" binding:"required,len=13" example:"1234567890123"`
 	PhoneNumber    string  `json:"phone_number" binding:"required" example:"0812345678"`
-	AccountType    string  `json:"account_type" binding:"required,oneof=SAVING CURRENT" example:"SAVING"`
+	AccountType    string  `json:"account_type" binding:"required" example:"SAVING"`
 	InitialBalance float64 `json:"initial_balance" binding:"gte=0" example:"1000.00"`
 }
 

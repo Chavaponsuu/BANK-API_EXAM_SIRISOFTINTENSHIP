@@ -52,10 +52,11 @@ func (h *AccountHandler) CreateAccount(c *gin.Context) {
 
 		case "invalid input: citizen_id must be 13 digits", "invalid input: account_type must be SAVING or CURRENT", "balance cannot be negative":
 			dto.Error(c, http.StatusBadRequest, err.Error())
-		case "account already exists":
+		case "citizen_id already exists":
 			dto.Error(c, http.StatusConflict, err.Error())
+
 		default:
-			dto.Error(c, http.StatusInternalServerError, "failed to create account")
+			dto.Error(c, http.StatusInternalServerError, err.Error())
 		}
 		return
 	}
@@ -109,8 +110,8 @@ func (h *AccountHandler) GetAccountByNumber(c *gin.Context) {
 //	@router			/api/v1/accounts [get]
 func (h *AccountHandler) GetAccountList(c *gin.Context) {
 	// Parse query parameters with defaults
-	page := 1
-	limit := 10
+	page := -1
+	limit := -1
 
 	if p := c.Query("page"); p != "" {
 		if val, err := strconv.Atoi(p); err == nil && val > 0 {

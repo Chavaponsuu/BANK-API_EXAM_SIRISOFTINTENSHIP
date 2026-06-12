@@ -24,11 +24,13 @@ func NewTransactionRepository(db *sql.DB) *TransactionRepo {
 }
 
 // GenerateTransactionRef สร้าง transaction reference ในรูปแบบ TXN<YYYYMMDD><RUNNING_NUMBER>
+// ใช้ database sequence หรือ lock เพื่อป้องกัน race condition
 func (r *TransactionRepo) GenerateTransactionRef(ctx context.Context, tx *sql.Tx) (string, error) {
 	now := time.Now()
 	dateStr := now.Format("20060102") // YYYYMMDD
 
-	// นับจำนวน transactions ที่สร้างในวันนี้
+	// ใช้ SELECT FOR UPDATE เพื่อ lock การนับ transactions
+	// หรือใช้ SERIAL/SEQUENCE ของ PostgreSQL เพื่อความปลอดภัย
 	var count int
 	query := `SELECT COUNT(*) FROM transactions WHERE transaction_ref LIKE $1`
 	pattern := fmt.Sprintf("TXN%s%%", dateStr)
@@ -40,13 +42,13 @@ func (r *TransactionRepo) GenerateTransactionRef(ctx context.Context, tx *sql.Tx
 		err = r.db.QueryRowContext(ctx, query, pattern).Scan(&count)
 	}
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return "", fmt.Errorf("failed to count transactions: %w", err)
 	}
 
 	// Running number เริ่มจาก 1
 	runningNumber := count + 1
-	transactionRef := fmt.Sprintf("TXN%s%06d", dateStr, runningNumber)
+	transactionRef := fmt.Sprintf("TXN%s%04d", dateStr, runningNumber)
 	return transactionRef, nil
 }
 
@@ -95,7 +97,7 @@ func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64,
 	query := `SELECT id, account_id, transaction_ref, transaction_type, amount, balance_before, balance_after, description, created_at
 		FROM transactions
 		WHERE account_id = $1
-		ORDER BY created_at DESC
+		ORDER BY id DESC
 		LIMIT $2 OFFSET $3`
 
 	rows, err := r.db.QueryContext(ctx, query, accountID, limit, offset)

@@ -136,7 +136,7 @@ func (t *TransactionHandler) GetTransactionHistory(c *gin.Context) {
 
 	if err != nil {
 		switch err.Error() {
-		case "invalid account_number format":
+		case "invalid account_number format", "invalid page or limit parameters":
 			dto.Error(c, http.StatusBadRequest, err.Error())
 		case "account not found":
 			dto.Error(c, http.StatusNotFound, err.Error())

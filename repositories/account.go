@@ -16,6 +16,7 @@ type AccountRepository interface {
 	CheckCitizenIDExists(ctx context.Context, citizenID string) (bool, error)
 	BeginTx(ctx context.Context) (*sql.Tx, error)
 	GetByAccountNumber(ctx context.Context, accountNumber string) (*models.Account, error)
+	GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*models.Account, error)
 	List(ctx context.Context, page int, limit int) ([]*models.Account, int, error)
 	UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accountID int64, newBalance float64) error
 	UpdateStatus(ctx context.Context, accountNumber string, status string) error
@@ -42,7 +43,7 @@ func (r *AccountRepo) CheckCitizenIDExists(ctx context.Context, citizenID string
 	var count int
 	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM accounts WHERE citizen_id = $1`, citizenID).Scan(&count)
 	if err != nil {
-		return false, fmt.Errorf("check citizen_id: %w", err)
+		return false, err
 	}
 	return count > 0, nil
 }
@@ -225,6 +226,38 @@ func (r *AccountRepo) UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accou
 		return fmt.Errorf("update balance: %w", err)
 	}
 	return nil
+}
+
+// GetByAccountNumberWithLock ดึงข้อมูล account พร้อม lock row (FOR UPDATE)
+func (r *AccountRepo) GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*models.Account, error) {
+	account := &models.Account{}
+
+	query := `SELECT id, account_number, owner_name, citizen_id, phone_number, account_type, balance, status, created_at, updated_at
+		FROM accounts
+		WHERE account_number = $1
+		FOR UPDATE`
+
+	err := tx.QueryRowContext(ctx, query, accountNumber).Scan(
+		&account.ID,
+		&account.AccountNumber,
+		&account.OwnerName,
+		&account.CitizenID,
+		&account.PhoneNumber,
+		&account.AccountType,
+		&account.Balance,
+		&account.Status,
+		&account.CreatedAt,
+		&account.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("get account by number with lock: %w", err)
+	}
+
+	return account, nil
 }
 
 func (r *AccountRepo) UpdateStatus(ctx context.Context, accountNumber string, status string) error {

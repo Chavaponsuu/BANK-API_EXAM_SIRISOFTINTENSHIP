@@ -40,21 +40,7 @@ func (s *transactionService) Deposit(ctx context.Context, accountNumber string, 
 		return nil, ErrInvalidAmount
 	}
 
-	// 2. Get account
-	account, err := s.accountRepo.GetByAccountNumber(ctx, accountNumber)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get account: %w", err)
-	}
-	if account == nil {
-		return nil, ErrAccountNotFound
-	}
-
-	// 3. Check account status
-	if account.Status != "ACTIVE" {
-		return nil, ErrAccountNotActive
-	}
-
-	// 4. Begin DB Transaction
+	// 2. Begin DB Transaction ก่อน (เปลี่ยนลำดับ)
 	tx, err := s.accountRepo.BeginTx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -66,7 +52,21 @@ func (s *transactionService) Deposit(ctx context.Context, accountNumber string, 
 		}
 	}()
 
-	// 5. Calculate balances
+	// 3. Get account พร้อม LOCK row (FOR UPDATE)
+	account, err := s.accountRepo.GetByAccountNumberWithLock(ctx, tx, accountNumber)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get account: %w", err)
+	}
+	if account == nil {
+		return nil, ErrAccountNotFound
+	}
+
+	// 4. Check account status
+	if account.Status != "ACTIVE" {
+		return nil, ErrAccountNotActive
+	}
+
+	// 5. Calculate balances (ใช้ balance ที่ lock แล้ว)
 	balanceBefore := account.Balance
 	balanceAfter := balanceBefore + amount
 
@@ -113,26 +113,7 @@ func (s *transactionService) Withdraw(ctx context.Context, accountNumber string,
 		return nil, ErrInvalidAmount
 	}
 
-	// 2. Get account
-	account, err := s.accountRepo.GetByAccountNumber(ctx, accountNumber)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get account: %w", err)
-	}
-	if account == nil {
-		return nil, ErrAccountNotFound
-	}
-
-	// 3. Check account status
-	if account.Status != "ACTIVE" {
-		return nil, ErrAccountNotActive
-	}
-
-	// 4. Check sufficient balance
-	if account.Balance < amount {
-		return nil, ErrInsufficientBalance
-	}
-
-	// 5. Begin DB Transaction
+	// 2. Begin DB Transaction ก่อน
 	tx, err := s.accountRepo.BeginTx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -143,6 +124,25 @@ func (s *transactionService) Withdraw(ctx context.Context, accountNumber string,
 			tx.Rollback()
 		}
 	}()
+
+	// 3. Get account พร้อม LOCK row (FOR UPDATE)
+	account, err := s.accountRepo.GetByAccountNumberWithLock(ctx, tx, accountNumber)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get account: %w", err)
+	}
+	if account == nil {
+		return nil, ErrAccountNotFound
+	}
+
+	// 4. Check account status
+	if account.Status != "ACTIVE" {
+		return nil, ErrAccountNotActive
+	}
+
+	// 5. Check sufficient balance (ตรวจสอบจาก balance ที่ lock แล้ว)
+	if account.Balance < amount {
+		return nil, ErrInsufficientBalance
+	}
 
 	// 6. Calculate balances
 	balanceBefore := account.Balance
@@ -188,7 +188,7 @@ func (s *transactionService) Withdraw(ctx context.Context, accountNumber string,
 func (s *transactionService) GetTransactionHistory(ctx context.Context, accountNumber string, page int, limit int) ([]*models.Transaction, int, error) {
 
 	if page < 1 || limit < 1 || limit > 100 {
-		return nil, 0, errors.New("invalid account_number format")
+		return nil, 0, errors.New("invalid page or limit parameters")
 	}
 
 	// 2. Get account
