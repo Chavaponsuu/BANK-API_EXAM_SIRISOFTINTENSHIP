@@ -43,20 +43,15 @@ definitions:
         enum:
         - SAVING
         - CURRENT
-        example: SAVING
         type: string
       citizen_id:
-        example: "1234567890123"
         type: string
       initial_balance:
-        example: 1000
         minimum: 0
         type: number
       owner_name:
-        example: John Doe
         type: string
       phone_number:
-        example: "0812345678"
         type: string
     required:
     - account_type
@@ -122,6 +117,7 @@ definitions:
       amount:
         type: number
       description:
+        maxLength: 255
         type: string
     type: object
   dto.TransactionResponse:
@@ -167,7 +163,7 @@ info:
   title: Go Gin Example API
   version: "1.0"
 paths:
-  /api/v1/accounts:
+  /accounts:
     get:
       description: Retrieve a paginated list of all accounts ordered by ID.
       parameters:
@@ -248,7 +244,7 @@ paths:
       summary: Create a new account
       tags:
       - accounts
-  /api/v1/accounts/{account_number}:
+  /accounts/{account_number}:
     get:
       description: Retrieve account details by 10-digit account number.
       parameters:
@@ -284,7 +280,7 @@ paths:
       summary: Get account by account number
       tags:
       - accounts
-  /api/v1/accounts/{account_number}/close:
+  /accounts/{account_number}/close:
     patch:
       description: Change account status from ACTIVE to CLOSED. Closed accounts cannot
         perform transactions (deposit/withdraw).
@@ -325,7 +321,7 @@ paths:
       summary: Close an account
       tags:
       - accounts
-  /api/v1/accounts/{account_number}/deposit:
+  /accounts/{account_number}/deposit:
     post:
       consumes:
       - application/json
@@ -374,7 +370,7 @@ paths:
       summary: Deposit money into an account
       tags:
       - transactions
-  /api/v1/accounts/{account_number}/transactions:
+  /accounts/{account_number}/transactions:
     get:
       description: Retrieve paginated transaction history for an account, ordered
         by newest first (created_at DESC).
@@ -425,7 +421,7 @@ paths:
       summary: Get transaction history of an account
       tags:
       - transactions
-  /api/v1/accounts/{account_number}/withdraw:
+  /accounts/{account_number}/withdraw:
     post:
       consumes:
       - application/json

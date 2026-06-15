@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/accounts": {
+        "/accounts": {
             "get": {
                 "description": "Retrieve a paginated list of all accounts ordered by ID.",
                 "produces": [
@@ -152,7 +152,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts/{account_number}": {
+        "/accounts/{account_number}": {
             "get": {
                 "description": "Retrieve account details by 10-digit account number.",
                 "produces": [
@@ -211,7 +211,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts/{account_number}/close": {
+        "/accounts/{account_number}/close": {
             "patch": {
                 "description": "Change account status from ACTIVE to CLOSED. Closed accounts cannot perform transactions (deposit/withdraw).",
                 "produces": [
@@ -276,7 +276,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts/{account_number}/deposit": {
+        "/accounts/{account_number}/deposit": {
             "post": {
                 "description": "Deposit a specified amount into the account. Creates a DEPOSIT transaction and updates account balance atomically.",
                 "consumes": [
@@ -353,7 +353,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts/{account_number}/transactions": {
+        "/accounts/{account_number}/transactions": {
             "get": {
                 "description": "Retrieve paginated transaction history for an account, ordered by newest first (created_at DESC).",
                 "produces": [
@@ -432,7 +432,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts/{account_number}/withdraw": {
+        "/accounts/{account_number}/withdraw": {
             "post": {
                 "description": "Withdraw a specified amount from the account. Validates sufficient balance, creates a WITHDRAW transaction, and updates account balance atomically.",
                 "consumes": [
@@ -1015,25 +1015,20 @@ const docTemplate = `{
                     "enum": [
                         "SAVING",
                         "CURRENT"
-                    ],
-                    "example": "SAVING"
+                    ]
                 },
                 "citizen_id": {
-                    "type": "string",
-                    "example": "1234567890123"
+                    "type": "string"
                 },
                 "initial_balance": {
                     "type": "number",
-                    "minimum": 0,
-                    "example": 1000
+                    "minimum": 0
                 },
                 "owner_name": {
-                    "type": "string",
-                    "example": "John Doe"
+                    "type": "string"
                 },
                 "phone_number": {
-                    "type": "string",
-                    "example": "0812345678"
+                    "type": "string"
                 }
             }
         },
@@ -1121,7 +1116,8 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         },

@@ -1,1080 +1,1162 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "description": "CRUD API built with Go and Gin framework, connected to PostgreSQL.",
-    "title": "Go Gin Example API",
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "name": "API Support",
-      "url": "http://www.example.com/support",
-      "email": "support@example.com"
+    "swagger": "2.0",
+    "info": {
+        "description": "CRUD API built with Go and Gin framework, connected to PostgreSQL.",
+        "title": "Go Gin Example API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.example.com/support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
     },
-    "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
-    },
-    "version": "1.0"
-  },
-  "host": "localhost:8080",
-  "basePath": "",
-  "paths": {
-    "/api/v1/accounts": {
-      "get": {
-        "description": "Retrieve a paginated list of all accounts ordered by ID.",
-        "produces": ["application/json"],
-        "tags": ["accounts"],
-        "summary": "List all accounts with pagination",
-        "parameters": [
-          {
-            "type": "integer",
-            "default": 1,
-            "description": "Page number (default: 1, min: 1)",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "default": 10,
-            "description": "Items per page (default: 10, max: 100)",
-            "name": "limit",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of accounts with pagination metadata",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/dto.AccountResponse"
-                      }
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/accounts": {
+            "get": {
+                "description": "Retrieve a paginated list of all accounts ordered by ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "List all accounts with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (default: 1, min: 1)",
+                        "name": "page",
+                        "in": "query"
                     },
-                    "meta": {
-                      "$ref": "#/definitions/dto.Meta"
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Items per page (default: 10, max: 100)",
+                        "name": "limit",
+                        "in": "query"
                     }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Invalid page or limit parameters",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Failed to get account list",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Create a new bank account record. If initial_balance \u003e 0, creates a DEPOSIT transaction atomically.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["accounts"],
-        "summary": "Create a new account",
-        "parameters": [
-          {
-            "description": "Account payload",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.CreateAccountRequest"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Account created successfully",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.AccountResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Invalid input: citizen_id must be 13 digits, account_type must be SAVING or CURRENT, or balance cannot be negative",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "409": {
-            "description": "Citizen ID already exists",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Failed to create account",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/accounts/{account_number}": {
-      "get": {
-        "description": "Retrieve account details by 10-digit account number.",
-        "produces": ["application/json"],
-        "tags": ["accounts"],
-        "summary": "Get account by account number",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Account Number (10 digits)",
-            "name": "account_number",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Account found",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.AccountResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Invalid account_number format",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "404": {
-            "description": "Account not found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/accounts/{account_number}/close": {
-      "patch": {
-        "description": "Change account status from ACTIVE to CLOSED. Closed accounts cannot perform transactions (deposit/withdraw).",
-        "produces": ["application/json"],
-        "tags": ["accounts"],
-        "summary": "Close an account",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Account Number (10 digits)",
-            "name": "account_number",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Account closed successfully",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.CloseAccountResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Invalid account number format",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "404": {
-            "description": "Account not found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "409": {
-            "description": "Account is already closed",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Failed to close account",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/accounts/{account_number}/deposit": {
-      "post": {
-        "description": "Deposit a specified amount into the account. Creates a DEPOSIT transaction and updates account balance atomically.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["transactions"],
-        "summary": "Deposit money into an account",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Account Number (10 digits)",
-            "name": "account_number",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Deposit request payload",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.TransactionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Deposit successful",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.TransactionResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Amount must be greater than 0",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "404": {
-            "description": "Account not found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "409": {
-            "description": "Account is not active or already closed",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Failed to update account balance",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/accounts/{account_number}/transactions": {
-      "get": {
-        "description": "Retrieve paginated transaction history for an account, ordered by newest first (created_at DESC).",
-        "produces": ["application/json"],
-        "tags": ["transactions"],
-        "summary": "Get transaction history of an account",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Account Number (10 digits)",
-            "name": "account_number",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "integer",
-            "default": 1,
-            "description": "Page number (default: 1, min: 1)",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "default": 10,
-            "description": "Items per page (default: 10, max: 100)",
-            "name": "limit",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Transaction history with pagination",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/dto.TransactionResponse"
-                      }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of accounts with pagination metadata",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.AccountResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.Meta"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     },
-                    "meta": {
-                      "$ref": "#/definitions/dto.Meta"
+                    "400": {
+                        "description": "Invalid page or limit parameters",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get account list",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
                     }
-                  }
                 }
-              ]
+            },
+            "post": {
+                "description": "Create a new bank account record. If initial_balance \u003e 0, creates a DEPOSIT transaction atomically.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Account payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Account created successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AccountResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input: citizen_id must be 13 digits, account_type must be SAVING or CURRENT, or balance cannot be negative",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Citizen ID already exists",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create account",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
             }
-          },
-          "400": {
-            "description": "Invalid account_number format or pagination parameters",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
+        },
+        "/accounts/{account_number}": {
+            "get": {
+                "description": "Retrieve account details by 10-digit account number.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get account by account number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AccountResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid account_number format",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
             }
-          },
-          "404": {
-            "description": "Account not found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
+        },
+        "/accounts/{account_number}/close": {
+            "patch": {
+                "description": "Change account status from ACTIVE to CLOSED. Closed accounts cannot perform transactions (deposit/withdraw).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Close an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account closed successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CloseAccountResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid account number format",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Account is already closed",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to close account",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
             }
-          },
-          "500": {
-            "description": "Failed to get transaction history",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
+        },
+        "/accounts/{account_number}/deposit": {
+            "post": {
+                "description": "Deposit a specified amount into the account. Creates a DEPOSIT transaction and updates account balance atomically.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Deposit money into an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Deposit request payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deposit successful",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TransactionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Amount must be greater than 0",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Account is not active or already closed",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update account balance",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
             }
-          }
+        },
+        "/accounts/{account_number}/transactions": {
+            "get": {
+                "description": "Retrieve paginated transaction history for an account, ordered by newest first (created_at DESC).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get transaction history of an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (default: 1, min: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Items per page (default: 10, max: 100)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction history with pagination",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.TransactionResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.Meta"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid account_number format or pagination parameters",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get transaction history",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{account_number}/withdraw": {
+            "post": {
+                "description": "Withdraw a specified amount from the account. Validates sufficient balance, creates a WITHDRAW transaction, and updates account balance atomically.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Withdraw money from an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Withdraw request payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Withdrawal successful",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TransactionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Insufficient balance or amount must be greater than 0",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Account is not active or already closed",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update account balance",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/examples": {
+            "get": {
+                "description": "Retrieve a list of all example records.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "List all examples",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.ExampleResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new example record.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Create a new example",
+                "parameters": [
+                    {
+                        "description": "Example payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateExampleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/examples/search": {
+            "get": {
+                "description": "Search for an example record by email query parameter.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Find example by email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email address",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/examples/{id}": {
+            "get": {
+                "description": "Retrieve a single example by its ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Get an example by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Example ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Fully replace an existing example by ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Update an example",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Example ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Example payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateExampleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an example record by ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Delete an example",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Example ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleDeleteResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Partially update fields of an existing example by ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Partial update an example",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Example ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Fields to patch",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatchExampleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Returns the health status of the API and database connectivity.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "API health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
         }
-      }
     },
-    "/api/v1/accounts/{account_number}/withdraw": {
-      "post": {
-        "description": "Withdraw a specified amount from the account. Validates sufficient balance, creates a WITHDRAW transaction, and updates account balance atomically.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["transactions"],
-        "summary": "Withdraw money from an account",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Account Number (10 digits)",
-            "name": "account_number",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Withdraw request payload",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.TransactionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Withdrawal successful",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
+    "definitions": {
+        "dto.AccountResponse": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.TransactionResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Insufficient balance or amount must be greater than 0",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "404": {
-            "description": "Account not found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "409": {
-            "description": "Account is not active or already closed",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Failed to update account balance",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      }
-    },
-    "/examples": {
-      "get": {
-        "description": "Retrieve a list of all example records.",
-        "produces": ["application/json"],
-        "tags": ["examples"],
-        "summary": "List all examples",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
+                "account_type": {
+                    "type": "string",
+                    "example": "SAVING"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/dto.ExampleResponse"
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Create a new example record.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["examples"],
-        "summary": "Create a new example",
-        "parameters": [
-          {
-            "description": "Example payload",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.CreateExampleRequest"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
+                "balance": {
+                    "type": "number",
+                    "example": 1000
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.ExampleResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      }
-    },
-    "/examples/search": {
-      "get": {
-        "description": "Search for an example record by email query parameter.",
-        "produces": ["application/json"],
-        "tags": ["examples"],
-        "summary": "Find example by email",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Email address",
-            "name": "email",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
+                "owner_name": {
+                    "type": "string",
+                    "example": "John Doe"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.ExampleResponse"
-                    }
-                  }
+                "status": {
+                    "type": "string",
+                    "example": "ACTIVE"
                 }
-              ]
             }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      }
-    },
-    "/examples/{id}": {
-      "get": {
-        "description": "Retrieve a single example by its ID.",
-        "produces": ["application/json"],
-        "tags": ["examples"],
-        "summary": "Get an example by ID",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Example ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
+        },
+        "dto.BaseResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "errors": {
+                    "type": "array",
+                    "items": {}
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.ExampleResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      },
-      "put": {
-        "description": "Fully replace an existing example by ID.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["examples"],
-        "summary": "Update an example",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Example ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Example payload",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.UpdateExampleRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
+                "message": {
+                    "type": "string"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.ExampleResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      },
-      "delete": {
-        "description": "Delete an example record by ID.",
-        "produces": ["application/json"],
-        "tags": ["examples"],
-        "summary": "Delete an example",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Example ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
+                "meta": {
+                    "$ref": "#/definitions/dto.Meta"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.ExampleDeleteResponse"
-                    }
-                  }
+                "success": {
+                    "type": "boolean"
                 }
-              ]
             }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      },
-      "patch": {
-        "description": "Partially update fields of an existing example by ID.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["examples"],
-        "summary": "Partial update an example",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Example ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Fields to patch",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.PatchExampleRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/dto.BaseResponse"
+        },
+        "dto.CloseAccountResponse": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/dto.ExampleResponse"
-                    }
-                  }
+                "status": {
+                    "type": "string"
                 }
-              ]
             }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
+        },
+        "dto.CreateAccountRequest": {
+            "type": "object",
+            "required": [
+                "account_type",
+                "citizen_id",
+                "owner_name",
+                "phone_number"
+            ],
+            "properties": {
+                "account_type": {
+                    "type": "string",
+                    "enum": [
+                        "SAVING",
+                        "CURRENT"
+                    ]
+                },
+                "citizen_id": {
+                    "type": "string"
+                },
+                "initial_balance": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "owner_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
             }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
+        },
+        "dto.CreateExampleRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
             }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
+        },
+        "dto.ExampleDeleteResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
             }
-          }
+        },
+        "dto.ExampleResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
+                }
+            }
+        },
+        "dto.Meta": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.PatchExampleRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        },
+        "dto.TransactionRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "dto.TransactionResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "balance_after": {
+                    "type": "number"
+                },
+                "balance_before": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "transaction_ref": {
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateExampleRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
         }
-      }
-    },
-    "/health": {
-      "get": {
-        "description": "Returns the health status of the API and database connectivity.",
-        "produces": ["application/json"],
-        "tags": ["health"],
-        "summary": "API health check",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          },
-          "503": {
-            "description": "Service Unavailable",
-            "schema": {
-              "$ref": "#/definitions/dto.BaseResponse"
-            }
-          }
-        }
-      }
     }
-  },
-  "definitions": {
-    "dto.AccountResponse": {
-      "type": "object",
-      "properties": {
-        "account_number": {
-          "type": "string"
-        },
-        "account_type": {
-          "type": "string",
-          "example": "SAVING"
-        },
-        "balance": {
-          "type": "number",
-          "example": 1000
-        },
-        "owner_name": {
-          "type": "string",
-          "example": "John Doe"
-        },
-        "status": {
-          "type": "string",
-          "example": "ACTIVE"
-        }
-      }
-    },
-    "dto.BaseResponse": {
-      "type": "object",
-      "properties": {
-        "data": {},
-        "errors": {
-          "type": "array",
-          "items": {}
-        },
-        "message": {
-          "type": "string"
-        },
-        "meta": {
-          "$ref": "#/definitions/dto.Meta"
-        },
-        "success": {
-          "type": "boolean"
-        }
-      }
-    },
-    "dto.CloseAccountResponse": {
-      "type": "object",
-      "properties": {
-        "account_number": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.CreateAccountRequest": {
-      "type": "object",
-      "required": ["account_type", "citizen_id", "owner_name", "phone_number"],
-      "properties": {
-        "account_type": {
-          "type": "string",
-          "enum": ["SAVING", "CURRENT"],
-          "example": "SAVING"
-        },
-        "citizen_id": {
-          "type": "string",
-          "example": "1234567890123"
-        },
-        "initial_balance": {
-          "type": "number",
-          "minimum": 0,
-          "example": 1000
-        },
-        "owner_name": {
-          "type": "string",
-          "example": "John Doe"
-        },
-        "phone_number": {
-          "type": "string",
-          "example": "0812345678"
-        }
-      }
-    },
-    "dto.CreateExampleRequest": {
-      "type": "object",
-      "required": ["email", "name"],
-      "properties": {
-        "email": {
-          "type": "string",
-          "example": "john@example.com"
-        },
-        "name": {
-          "type": "string",
-          "example": "John Doe"
-        }
-      }
-    },
-    "dto.ExampleDeleteResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer"
-        }
-      }
-    },
-    "dto.ExampleResponse": {
-      "type": "object",
-      "properties": {
-        "created_at": {
-          "type": "string",
-          "example": "2024-01-01T00:00:00Z"
-        },
-        "email": {
-          "type": "string",
-          "example": "john@example.com"
-        },
-        "id": {
-          "type": "integer",
-          "example": 1
-        },
-        "name": {
-          "type": "string",
-          "example": "John Doe"
-        },
-        "updated_at": {
-          "type": "string",
-          "example": "2024-01-01T00:00:00Z"
-        }
-      }
-    },
-    "dto.Meta": {
-      "type": "object",
-      "properties": {
-        "page": {
-          "type": "integer"
-        },
-        "per_page": {
-          "type": "integer"
-        },
-        "total": {
-          "type": "integer"
-        }
-      }
-    },
-    "dto.PatchExampleRequest": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "example": "john@example.com"
-        },
-        "name": {
-          "type": "string",
-          "example": "John Doe"
-        }
-      }
-    },
-    "dto.TransactionRequest": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "number"
-        },
-        "description": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.TransactionResponse": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "number"
-        },
-        "balance_after": {
-          "type": "number"
-        },
-        "balance_before": {
-          "type": "number"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "transaction_ref": {
-          "type": "string"
-        },
-        "transaction_type": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.UpdateExampleRequest": {
-      "type": "object",
-      "required": ["email", "name"],
-      "properties": {
-        "email": {
-          "type": "string",
-          "example": "john@example.com"
-        },
-        "name": {
-          "type": "string",
-          "example": "John Doe"
-        }
-      }
-    }
-  }
 }

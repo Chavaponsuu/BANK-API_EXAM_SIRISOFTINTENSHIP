@@ -3,8 +3,8 @@ package dto
 import "github.com/krizad/go-gin-api/models"
 
 type TransactionRequest struct {
-	Amount      float64 `json:"amount"`
-	Description string  `json:"description"`
+	Amount      float64 `json:"amount" binding:"gt=0"`
+	Description string  `json:"description" binding:"max=255"`
 }
 
 type TransactionResponse struct {
@@ -27,4 +27,17 @@ func ToTransactionResponse(m *models.Transaction) *TransactionResponse {
 		Description:    m.Description,
 		CreatedAt:      m.CreatedAt,
 	}
+}
+
+func ToTransactionModel(a *models.Account) *models.Transaction {
+	return &models.Transaction{
+		AccountID:       a.ID,
+		TransactionRef:  "",
+		TransactionType: "DEPOSIT",
+		Amount:          a.Balance,
+		BalanceBefore:   0,
+		BalanceAfter:    a.Balance,
+		Description:     "Initial deposit",
+	}
+
 }

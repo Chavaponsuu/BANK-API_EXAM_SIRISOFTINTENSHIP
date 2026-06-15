@@ -6,11 +6,22 @@ import (
 
 // Request DTOs
 type CreateAccountRequest struct {
-	OwnerName      string  `json:"owner_name" binding:"required" example:"John Doe"`
-	CitizenID      string  `json:"citizen_id" binding:"required,len=13" example:"1234567890123"`
-	PhoneNumber    string  `json:"phone_number" binding:"required" example:"0812345678"`
-	AccountType    string  `json:"account_type" binding:"required" example:"SAVING"`
-	InitialBalance float64 `json:"initial_balance" binding:"gte=0" example:"1000.00"`
+	OwnerName      string  `json:"owner_name" binding:"required"`
+	CitizenID      string  `json:"citizen_id"  binding:"required,len=13,numeric"`
+	PhoneNumber    string  `json:"phone_number" binding:"required"`
+	AccountType    string  `json:"account_type" binding:"required,oneof=SAVING CURRENT"`
+	InitialBalance float64 `json:"initial_balance" binding:"gte=0"`
+}
+
+func ToCreateAccountRequest(accountReq *CreateAccountRequest) *models.Account {
+	return &models.Account{
+		OwnerName:   accountReq.OwnerName,
+		CitizenID:   accountReq.CitizenID,
+		PhoneNumber: accountReq.PhoneNumber,
+		AccountType: accountReq.AccountType,
+		Balance:     accountReq.InitialBalance,
+	}
+
 }
 
 // Response DTOs
@@ -49,4 +60,8 @@ func ToCloseAccountResponse(m *models.Account) *CloseAccountResponse {
 		AccountNumber: m.AccountNumber,
 		Status:        m.Status,
 	}
+}
+
+type AccountNumberURI struct {
+	AccountNumber string `uri:"account_number" binding:"required,len=10,numeric"`
 }

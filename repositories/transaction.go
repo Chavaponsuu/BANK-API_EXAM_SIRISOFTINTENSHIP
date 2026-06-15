@@ -24,11 +24,9 @@ func NewTransactionRepository(db *sql.DB) TransactionRepository {
 	return &TransactionRepo{db: db}
 }
 
-
 func (r *TransactionRepo) GenerateTransactionRef(ctx context.Context, tx *sql.Tx) (string, error) {
 	now := time.Now()
-	dateStr := now.Format("20060102") 
-
+	dateStr := now.Format("20060102")
 
 	var count int
 	query := `SELECT COUNT(*) FROM transactions WHERE transaction_ref LIKE $1`
@@ -49,7 +47,6 @@ func (r *TransactionRepo) GenerateTransactionRef(ctx context.Context, tx *sql.Tx
 	transactionRef := fmt.Sprintf("TXN%s%04d", dateStr, runningNumber)
 	return transactionRef, nil
 }
-
 
 func (r *TransactionRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, transaction *models.Transaction) (*models.Transaction, error) {
 	query := `INSERT INTO transactions (account_id, transaction_ref, transaction_type, amount, balance_before, balance_after, description)
@@ -77,18 +74,12 @@ func (r *TransactionRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, transact
 }
 
 // GetByAccountID ดึงประวัติธุรกรรมของบัญชี เรียงจากใหม่ไปเก่า
-func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*models.Transaction, int, error) {
+func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64, limit int, offset int) ([]*models.Transaction, int, error) {
 	// Get total count
 	var total int
 	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM transactions WHERE account_id = $1`, accountID).Scan(&total)
 	if err != nil {
 		return nil, 0, fmt.Errorf("count transactions: %w", err)
-	}
-
-	// Calculate offset
-	offset := (page - 1) * limit
-	if offset < 0 {
-		offset = 0
 	}
 
 	// Get transactions - เรียงจากใหม่ไปเก่า (ORDER BY created_at DESC)

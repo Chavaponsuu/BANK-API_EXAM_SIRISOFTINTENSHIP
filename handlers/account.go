@@ -2,11 +2,10 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/krizad/go-gin-api/constants"
 	"github.com/krizad/go-gin-api/dto"
-	"github.com/krizad/go-gin-api/models"
 	"github.com/krizad/go-gin-api/services"
 )
 
@@ -30,7 +29,7 @@ func NewAccountHandler(service services.AccountService) *AccountHandler {
 //	@failure		400		{object}	dto.BaseResponse	"Invalid input: citizen_id must be 13 digits, account_type must be SAVING or CURRENT, or balance cannot be negative"
 //	@failure		409		{object}	dto.BaseResponse	"Citizen ID already exists"
 //	@failure		500		{object}	dto.BaseResponse	"Failed to create account"
-//	@router			/api/v1/accounts [post]
+//	@router			/accounts [post]
 func (h *AccountHandler) CreateAccount(c *gin.Context) {
 	var req dto.CreateAccountRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -38,26 +37,11 @@ func (h *AccountHandler) CreateAccount(c *gin.Context) {
 		return
 	}
 
-	account := &models.Account{
-		OwnerName:   req.OwnerName,
-		CitizenID:   req.CitizenID,
-		PhoneNumber: req.PhoneNumber,
-		AccountType: req.AccountType,
-		Balance:     req.InitialBalance,
-	}
+	account := dto.ToCreateAccountRequest(&req)
 
 	createdAccount, err := h.service.CreateAccount(c.Request.Context(), account)
 	if err != nil {
-		switch err.Error() {
-
-		case "invalid input: citizen_id must be 13 digits", "invalid input: account_type must be SAVING or CURRENT", "balance cannot be negative":
-			dto.Error(c, http.StatusBadRequest, err.Error())
-		case "citizen_id already exists":
-			dto.Error(c, http.StatusConflict, err.Error())
-
-		default:
-			dto.Error(c, http.StatusInternalServerError, err.Error())
-		}
+		constants.HandleError(c, err)
 		return
 	}
 
@@ -75,21 +59,18 @@ func (h *AccountHandler) CreateAccount(c *gin.Context) {
 //	@failure		400				{object}	dto.BaseResponse	"Invalid account_number format"
 //	@failure		404				{object}	dto.BaseResponse	"Account not found"
 //	@failure		500				{object}	dto.BaseResponse	"Internal server error"
-//	@router			/api/v1/accounts/{account_number} [get]
+//	@router			/accounts/{account_number} [get]
 func (h *AccountHandler) GetAccountByNumber(c *gin.Context) {
-	accountNumber := c.Param("account_number")
+	var uri dto.AccountNumberURI
+	if err := c.ShouldBindUri(&uri); err != nil {
+		dto.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
-	account, err := h.service.GetAccountByNumber(c.Request.Context(), accountNumber)
+	account, err := h.service.GetAccountByNumber(c.Request.Context(), uri.AccountNumber)
 
 	if err != nil {
-		switch err.Error() {
-		case "invalid account_number format":
-			dto.Error(c, http.StatusBadRequest, err.Error())
-		case "account not found":
-			dto.Error(c, http.StatusNotFound, err.Error())
-		default:
-			dto.Error(c, http.StatusInternalServerError, err.Error())
-		}
+		constants.HandleError(c, err)
 		return
 	}
 
@@ -107,37 +88,20 @@ func (h *AccountHandler) GetAccountByNumber(c *gin.Context) {
 //	@success		200		{object}	dto.BaseResponse{data=[]dto.AccountResponse,meta=dto.Meta}	"List of accounts with pagination metadata"
 //	@failure		400		{object}	dto.BaseResponse	"Invalid page or limit parameters"
 //	@failure		500		{object}	dto.BaseResponse	"Failed to get account list"
-//	@router			/api/v1/accounts [get]
+//	@router			/accounts [get]
 func (h *AccountHandler) GetAccountList(c *gin.Context) {
 	// Parse query parameters with defaults
-	page := -1
-	limit := -1
+	var query dto.Pagination
+	if err := c.ShouldBindQuery(&query); err != nil {
+		dto.Error(c, http.StatusBadRequest, err.Error())
+		return
 
-	if p := c.Query("page"); p != "" {
-		if val, err := strconv.Atoi(p); err == nil && val > 0 {
-			page = val
-		}
-	}
-
-	if l := c.Query("limit"); l != "" {
-		if val, err := strconv.Atoi(l); err == nil && val > 0 {
-			limit = val
-		}
 	}
 
 	// Call service
-	accounts, total, err := h.service.GetAccountList(c.Request.Context(), page, limit)
+	accounts, total, err := h.service.GetAccountList(c.Request.Context(), query.Page, query.Limit)
 	if err != nil {
-		switch err.Error() {
-		case "invalid page or limit parameters":
-			dto.Error(c, http.StatusBadRequest, err.Error())
-		case "failed to get account list":
-			dto.Error(c, http.StatusInternalServerError, err.Error())
-		case "failed to count accounts":
-			dto.Error(c, http.StatusInternalServerError, err.Error())
-		default:
-			dto.Error(c, http.StatusInternalServerError, "failed to get account list")
-		}
+		constants.HandleError(c, err)
 		return
 	}
 
@@ -149,8 +113,8 @@ func (h *AccountHandler) GetAccountList(c *gin.Context) {
 
 	// Return with pagination metadata
 	dto.WithMeta(c, http.StatusOK, accountResponses, "OK", &dto.Meta{
-		Page:    page,
-		PerPage: limit,
+		Page:    query.Page,
+		PerPage: query.Limit,
 		Total:   total,
 	})
 }
@@ -167,24 +131,18 @@ func (h *AccountHandler) GetAccountList(c *gin.Context) {
 //	@failure		404				{object}	dto.BaseResponse	"Account not found"
 //	@failure		409				{object}	dto.BaseResponse	"Account is already closed"
 //	@failure		500				{object}	dto.BaseResponse	"Failed to close account"
-//	@router			/api/v1/accounts/{account_number}/close [patch]
+//	@router			/accounts/{account_number}/close [patch]
 func (h *AccountHandler) CloseAccountHandler(c *gin.Context) {
-	accountNumber := c.Param("account_number")
-	account, err := h.service.CloseAccount(c.Request.Context(), accountNumber)
-	if err != nil {
-		switch err.Error() {
-		case "invalid account_number format":
-			dto.Error(c, http.StatusBadRequest, err.Error())
-		case "account not found":
-			dto.Error(c, http.StatusNotFound, err.Error())
-		case "account is already closed":
-			dto.Error(c, http.StatusConflict, err.Error())
-		default:
-			dto.Error(c, http.StatusInternalServerError, err.Error())
 
-		}
+	var uri dto.AccountNumberURI
+	if err := c.ShouldBindUri(&uri); err != nil {
+		dto.Error(c, http.StatusBadRequest, err.Error())
 		return
-
+	}
+	account, err := h.service.CloseAccount(c.Request.Context(), uri.AccountNumber)
+	if err != nil {
+		constants.HandleError(c, err)
+		return
 	}
 
 	dto.OK(c, dto.ToCloseAccountResponse(account))

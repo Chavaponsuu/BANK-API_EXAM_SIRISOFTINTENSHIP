@@ -30,9 +30,34 @@ func NewAccountRepository(db *sql.DB) AccountRepository {
 	return &AccountRepo{db: db}
 }
 
-func generateAccountNumber(account_num int64) string {
-	number := fmt.Sprintf("%010d", account_num)
-	return number
+type querier interface {
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
+}
+
+func generateAccountNumber(ctx context.Context, q querier) (string, error) {
+	var last string
+	err := q.QueryRowContext(ctx, `
+		SELECT account_number
+		FROM accounts
+		ORDER BY account_number DESC
+		LIMIT 1
+		FOR UPDATE
+	`).Scan(&last)
+	if err != nil && err != sql.ErrNoRows {
+		return "", err
+	}
+
+	var next int64 = 1
+	if last != "" {
+		n, err := strconv.ParseInt(last, 10, 64)
+		if err != nil {
+			return "", err
+		}
+		next = n + 1
+	}
+
+	number := fmt.Sprintf("%010d", next)
+	return number, err
 }
 
 func (r *AccountRepo) BeginTx(ctx context.Context) (*sql.Tx, error) {
@@ -51,77 +76,24 @@ func (r *AccountRepo) CheckCitizenIDExists(ctx context.Context, citizenID string
 func (r *AccountRepo) Create(ctx context.Context, account *models.Account) (*models.Account, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-
-	var last string
-	err := r.db.QueryRowContext(ctx, `
-		SELECT account_number
-		FROM accounts
-		ORDER BY account_number DESC
-		LIMIT 1
-	`).Scan(&last)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, err
-	}
-
-	var next int64 = 1
-	if last != "" {
-		n, err := strconv.ParseInt(last, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		next = n + 1
-	}
-
-	account.AccountNumber = generateAccountNumber(next)
-	account.Status = "ACTIVE"
-
-	query := `INSERT INTO accounts (owner_name, citizen_id, phone_number, account_type, balance, account_number, status)
-	 VALUES ($1, $2, $3, $4, $5, $6, $7)
-	 RETURNING id, created_at, updated_at`
-	err = r.db.QueryRowContext(ctx, query,
-		account.OwnerName,
-		account.CitizenID,
-		account.PhoneNumber,
-		account.AccountType,
-		account.Balance,
-		account.AccountNumber,
-		account.Status,
-	).Scan(&account.ID, &account.CreatedAt, &account.UpdatedAt)
-	if err != nil {
-		return nil, fmt.Errorf("create account: %w", err)
-	}
-	return account, nil
+	return r.createWithQuerier(ctx, r.db, account)
 }
 
 func (r *AccountRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, account *models.Account) (*models.Account, error) {
-	var last string
-	err := tx.QueryRowContext(ctx, `
-		SELECT account_number
-		FROM accounts
-		ORDER BY account_number DESC
-		LIMIT 1
-		FOR UPDATE
-	`).Scan(&last)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, err
+	return r.createWithQuerier(ctx, tx, account)
+}
+
+func (r *AccountRepo) createWithQuerier(ctx context.Context, q querier, account *models.Account) (*models.Account, error) {
+	var err error
+	account.AccountNumber, err = generateAccountNumber(ctx, q)
+	if err != nil {
+		return nil, fmt.Errorf("generate account number: %w", err)
 	}
 
-	var next int64 = 1
-	if last != "" {
-		n, err := strconv.ParseInt(last, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		next = n + 1
-	}
-
-	account.AccountNumber = generateAccountNumber(next)
-	account.Status = "ACTIVE"
-
-	query := `INSERT INTO accounts (owner_name, citizen_id, phone_number, account_type, balance, account_number, status)
-	 VALUES ($1, $2, $3, $4, $5, $6, $7)
-	 RETURNING id, created_at, updated_at`
-	err = tx.QueryRowContext(ctx, query,
+	err = q.QueryRowContext(ctx, `
+		INSERT INTO accounts (owner_name, citizen_id, phone_number, account_type, balance, account_number, status)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id, created_at, updated_at`,
 		account.OwnerName,
 		account.CitizenID,
 		account.PhoneNumber,
@@ -139,13 +111,25 @@ func (r *AccountRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, account *mod
 func (r *AccountRepo) GetByAccountNumber(ctx context.Context, accountNumber string) (*models.Account, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
+	return r.getByAccountNumber(ctx, r.db, accountNumber, false)
+}
 
-	account := &models.Account{}
+func (r *AccountRepo) GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*models.Account, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	return r.getByAccountNumber(ctx, tx, accountNumber, true)
+}
 
+func (r *AccountRepo) getByAccountNumber(ctx context.Context, q querier, accountNumber string, lock bool) (*models.Account, error) {
 	query := `SELECT id, account_number, owner_name, citizen_id, phone_number, account_type, balance, status, created_at, updated_at
 		FROM accounts
 		WHERE account_number = $1`
-	err := r.db.QueryRowContext(ctx, query, accountNumber).Scan(
+	if lock {
+		query += " FOR UPDATE"
+	}
+
+	account := &models.Account{}
+	err := q.QueryRowContext(ctx, query, accountNumber).Scan(
 		&account.ID,
 		&account.AccountNumber,
 		&account.OwnerName,
@@ -157,7 +141,6 @@ func (r *AccountRepo) GetByAccountNumber(ctx context.Context, accountNumber stri
 		&account.CreatedAt,
 		&account.UpdatedAt,
 	)
-
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -167,8 +150,7 @@ func (r *AccountRepo) GetByAccountNumber(ctx context.Context, accountNumber stri
 
 	return account, nil
 }
-
-func (r *AccountRepo) GetByAccountList(ctx context.Context, page int, limit int) ([]*models.Account, int, error) {
+func (r *AccountRepo) GetByAccountList(ctx context.Context, limit int, offset int) ([]*models.Account, int, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	var total int
@@ -183,7 +165,7 @@ func (r *AccountRepo) GetByAccountList(ctx context.Context, page int, limit int)
 
 	accountList := []*models.Account{}
 	query := `SELECT account_number,owner_name,account_type,balance,status FROM accounts ORDER BY account_number LIMIT $1 OFFSET $2`
-	rows, err := r.db.QueryContext(ctx, query, limit, (page-1)*limit)
+	rows, err := r.db.QueryContext(ctx, query, limit, offset)
 
 	if err != nil {
 		return nil, 0, err
@@ -217,36 +199,6 @@ func (r *AccountRepo) UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accou
 }
 
 // GetByAccountNumberWithLock ดึงข้อมูล account พร้อม lock row (FOR UPDATE)
-func (r *AccountRepo) GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*models.Account, error) {
-	account := &models.Account{}
-
-	query := `SELECT id, account_number, owner_name, citizen_id, phone_number, account_type, balance, status, created_at, updated_at
-		FROM accounts
-		WHERE account_number = $1
-		FOR UPDATE`
-
-	err := tx.QueryRowContext(ctx, query, accountNumber).Scan(
-		&account.ID,
-		&account.AccountNumber,
-		&account.OwnerName,
-		&account.CitizenID,
-		&account.PhoneNumber,
-		&account.AccountType,
-		&account.Balance,
-		&account.Status,
-		&account.CreatedAt,
-		&account.UpdatedAt,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("get account by number with lock: %w", err)
-	}
-
-	return account, nil
-}
 
 func (r *AccountRepo) UpdateStatus(ctx context.Context, accountNumber string, status string) error {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
