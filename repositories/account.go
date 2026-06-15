@@ -4,14 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/krizad/go-gin-api/models"
 )
 
 type AccountRepository interface {
-	Create(ctx context.Context, account *models.Account) (*models.Account, error)
+	// Create(ctx context.Context, account *models.Account) (*models.Account, error)
 	CreateWithTx(ctx context.Context, tx *sql.Tx, account *models.Account) (*models.Account, error)
 	CheckCitizenIDExists(ctx context.Context, citizenID string) (bool, error)
 	BeginTx(ctx context.Context) (*sql.Tx, error)
@@ -19,7 +18,8 @@ type AccountRepository interface {
 	GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*models.Account, error)
 	GetByAccountList(ctx context.Context, page int, limit int) ([]*models.Account, int, error)
 	UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accountID int64, newBalance float64) error
-	UpdateStatus(ctx context.Context, accountNumber string, status string) error
+	UpdateStatus(ctx context.Context, tx *sql.Tx, accountNumber string, status string) error
+	GenerateAccountNumber(ctx context.Context, tx *sql.Tx) (string, error)
 }
 
 type AccountRepo struct {
@@ -34,30 +34,19 @@ type querier interface {
 	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 }
 
-func generateAccountNumber(ctx context.Context, q querier) (string, error) {
-	var last string
-	err := q.QueryRowContext(ctx, `
-		SELECT account_number
-		FROM accounts
-		ORDER BY account_number DESC
-		LIMIT 1
-		FOR UPDATE
-	`).Scan(&last)
-	if err != nil && err != sql.ErrNoRows {
+func (r *AccountRepo) GenerateAccountNumber(ctx context.Context, tx *sql.Tx) (string, error) {
+	var next int64
+
+	err := tx.QueryRowContext(
+		ctx,
+		`SELECT nextval('account_number_seq')`,
+	).Scan(&next)
+
+	if err != nil {
 		return "", err
 	}
 
-	var next int64 = 1
-	if last != "" {
-		n, err := strconv.ParseInt(last, 10, 64)
-		if err != nil {
-			return "", err
-		}
-		next = n + 1
-	}
-
-	number := fmt.Sprintf("%010d", next)
-	return number, err
+	return fmt.Sprintf("%010d", next), nil
 }
 
 func (r *AccountRepo) BeginTx(ctx context.Context) (*sql.Tx, error) {
@@ -73,24 +62,15 @@ func (r *AccountRepo) CheckCitizenIDExists(ctx context.Context, citizenID string
 	return count > 0, nil
 }
 
-func (r *AccountRepo) Create(ctx context.Context, account *models.Account) (*models.Account, error) {
-	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-	defer cancel()
-	return r.createWithQuerier(ctx, r.db, account)
-}
+// func (r *AccountRepo) Create(ctx context.Context, account *models.Account) (*models.Account, error) {
+// 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+// 	defer cancel()
+// 	return r.createWithQuerier(ctx, r.db, account)
+// }
 
 func (r *AccountRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, account *models.Account) (*models.Account, error) {
-	return r.createWithQuerier(ctx, tx, account)
-}
-
-func (r *AccountRepo) createWithQuerier(ctx context.Context, q querier, account *models.Account) (*models.Account, error) {
-	var err error
-	account.AccountNumber, err = generateAccountNumber(ctx, q)
-	if err != nil {
-		return nil, fmt.Errorf("generate account number: %w", err)
-	}
-
-	err = q.QueryRowContext(ctx, `
+	fmt.Println("account number ====== ", account.AccountNumber)
+	err := tx.QueryRowContext(ctx, `
 		INSERT INTO accounts (owner_name, citizen_id, phone_number, account_type, balance, account_number, status)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, created_at, updated_at`,
@@ -107,6 +87,31 @@ func (r *AccountRepo) createWithQuerier(ctx context.Context, q querier, account 
 	}
 	return account, nil
 }
+
+// func (r *AccountRepo) createWithQuerier(ctx context.Context, q querier, account *models.Account) (*models.Account, error) {
+// 	var err error
+// 	account.AccountNumber, err = generateAccountNumber(ctx, q)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("generate account number: %w", err)
+// 	}
+
+// 	err = q.QueryRowContext(ctx, `
+// 		INSERT INTO accounts (owner_name, citizen_id, phone_number, account_type, balance, account_number, status)
+// 		VALUES ($1, $2, $3, $4, $5, $6, $7)
+// 		RETURNING id, created_at, updated_at`,
+// 		account.OwnerName,
+// 		account.CitizenID,
+// 		account.PhoneNumber,
+// 		account.AccountType,
+// 		account.Balance,
+// 		account.AccountNumber,
+// 		account.Status,
+// 	).Scan(&account.ID, &account.CreatedAt, &account.UpdatedAt)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("create account: %w", err)
+// 	}
+// 	return account, nil
+// }
 
 func (r *AccountRepo) GetByAccountNumber(ctx context.Context, accountNumber string) (*models.Account, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -200,12 +205,12 @@ func (r *AccountRepo) UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accou
 
 // GetByAccountNumberWithLock ดึงข้อมูล account พร้อม lock row (FOR UPDATE)
 
-func (r *AccountRepo) UpdateStatus(ctx context.Context, accountNumber string, status string) error {
+func (r *AccountRepo) UpdateStatus(ctx context.Context, tx *sql.Tx, accountNumber string, status string) error {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-
+	// Update status
 	query := `UPDATE accounts SET status = $1, updated_at = NOW() WHERE account_number = $2`
-	result, err := r.db.ExecContext(ctx, query, status, accountNumber)
+	result, err := tx.ExecContext(ctx, query, status, accountNumber)
 	if err != nil {
 		return fmt.Errorf("update status: %w", err)
 	}

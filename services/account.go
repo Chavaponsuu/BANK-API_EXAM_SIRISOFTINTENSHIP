@@ -37,60 +37,96 @@ func (s *accountService) CreateAccount(ctx context.Context, account *models.Acco
 		return nil, constants.ErrCitizenIDExists
 	}
 
-	account.Status = "ACTIVE"
-
-	if account.Balance > 0 {
-		return s.createAccountWithDeposit(ctx, account)
-	}
-
-	return s.repo.Create(ctx, account)
-}
-
-// createAccountWithDeposit สร้างบัญชีและ transaction deposit พร้อมกันด้วย DB Transaction
-func (s *accountService) createAccountWithDeposit(ctx context.Context, account *models.Account) (*models.Account, error) {
-	// เริ่ม DB Transaction
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
 	}
-
-	// ใช้ defer เพื่อ rollback ถ้าเกิด error
 	defer func() {
 		if err != nil {
 			tx.Rollback()
 		}
 	}()
 
-	// 1. สร้างบัญชี (ใช้ CreateWithTx เพื่อใช้ transaction เดียวกัน)
+	account.Status = "ACTIVE"
+
+	// if account.Balance > 0 {
+	// 	return s.createAccountWithDeposit(ctx, account)
+	// }
+	account.AccountNumber, err = s.repo.GenerateAccountNumber(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
 	createdAccount, err := s.repo.CreateWithTx(ctx, tx, account)
+	// createdAccount.AccountNumber = s.repo.
+
 	if err != nil {
-		return nil, fmt.Errorf("failed to create account: %w", err)
+		return nil, err
+	}
+	if createdAccount.Balance > 0 {
+		_, err = s.transactionRepo.CreateWithTx(ctx, tx, &models.Transaction{
+			AccountID:       createdAccount.ID,
+			TransactionType: "DEPOSIT",
+			Amount:          createdAccount.Balance,
+			BalanceBefore:   0,
+			BalanceAfter:    createdAccount.Balance,
+			Description:     "Initial deposit",
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create deposit transaction: %w", err)
+		}
 	}
 
-	// 2. Generate transaction reference
-
-	// 3. สร้าง deposit transaction
-	transaction := &models.Transaction{
-		AccountID:       createdAccount.ID,
-		TransactionType: "DEPOSIT",
-		Amount:          createdAccount.Balance,
-		BalanceBefore:   0,
-		BalanceAfter:    createdAccount.Balance,
-		Description:     "Initial deposit",
-	}
-
-	_, err = s.transactionRepo.CreateWithTx(ctx, tx, transaction)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create deposit transaction: %w", err)
-	}
-
-	// 4. Commit transaction (ถ้าทุกอย่างสำเร็จ)
 	if err = tx.Commit(); err != nil {
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
-
 	return createdAccount, nil
 }
+
+// // createAccountWithDeposit สร้างบัญชีและ transaction deposit พร้อมกันด้วย DB Transaction
+// func (s *accountService) createAccountWithDeposit(ctx context.Context, account *models.Account) (*models.Account, error) {
+// 	// เริ่ม DB Transaction
+// 	tx, err := s.repo.BeginTx(ctx)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+// 	}
+
+// 	// ใช้ defer เพื่อ rollback ถ้าเกิด error
+// 	defer func() {
+// 		if err != nil {
+// 			tx.Rollback()
+// 		}
+// 	}()
+
+// 	// 1. สร้างบัญชี (ใช้ CreateWithTx เพื่อใช้ transaction เดียวกัน)
+// 	createdAccount, err := s.repo.CreateWithTx(ctx, tx, account)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to create account: %w", err)
+// 	}
+
+// 	// 2. Generate transaction reference
+
+// 	// 3. สร้าง deposit transaction
+// 	transaction := &models.Transaction{
+// 		AccountID:       createdAccount.ID,
+// 		TransactionType: "DEPOSIT",
+// 		Amount:          createdAccount.Balance,
+// 		BalanceBefore:   0,
+// 		BalanceAfter:    createdAccount.Balance,
+// 		Description:     "Initial deposit",
+// 	}
+
+// 	_, err = s.transactionRepo.CreateWithTx(ctx, tx, transaction)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to create deposit transaction: %w", err)
+// 	}
+
+// 	// 4. Commit transaction (ถ้าทุกอย่างสำเร็จ)
+// 	if err = tx.Commit(); err != nil {
+// 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+// 	}
+
+//		return createdAccount, nil
+//	}
 func (s *accountService) GetAccountByNumber(ctx context.Context, accountNumber string) (*models.Account, error) {
 	account, err := s.repo.GetByAccountNumber(ctx, accountNumber)
 	if err != nil {
@@ -116,7 +152,17 @@ func (s *accountService) GetAccountList(ctx context.Context, page int, limit int
 }
 
 func (s *accountService) CloseAccount(ctx context.Context, accountNumber string) (*models.Account, error) {
-	account, err := s.repo.GetByAccountNumber(ctx, accountNumber)
+
+	tx, err := s.repo.BeginTx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+	account, err := s.repo.GetByAccountNumberWithLock(ctx, tx, accountNumber)
 	if err != nil {
 		return nil, constants.ErrInternal
 	}
@@ -129,9 +175,12 @@ func (s *accountService) CloseAccount(ctx context.Context, accountNumber string)
 		return nil, constants.ErrAccountAlreadyClosed
 	}
 
-	err = s.repo.UpdateStatus(ctx, accountNumber, "CLOSED")
+	err = s.repo.UpdateStatus(ctx, tx, accountNumber, "CLOSED")
 	if err != nil {
 		return nil, constants.ErrOperationFailed
+	}
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 	account, err = s.repo.GetByAccountNumber(ctx, accountNumber)
 	if err != nil {
