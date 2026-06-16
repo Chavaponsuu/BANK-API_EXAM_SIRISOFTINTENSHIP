@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"github.com/krizad/go-gin-api/models"
+	"github.com/krizad/go-gin-api/internal/core/domain"
 )
 
 type ExampleResponse struct {
@@ -20,7 +20,7 @@ type ExampleDeleteResponse struct {
 	ID int64 `json:"id"`
 }
 
-func ToExampleResponse(m *models.Example) *ExampleResponse {
+func ToExampleResponse(m *domain.Example) *ExampleResponse {
 	return &ExampleResponse{
 		ID:        m.ID,
 		Name:      m.Name,
@@ -30,9 +30,9 @@ func ToExampleResponse(m *models.Example) *ExampleResponse {
 	}
 }
 
-func ToExampleListResponse(models []models.Example) ExampleListResponse {
-	list := make(ExampleListResponse, 0, len(models))
-	for _, m := range models {
+func ToExampleListResponse(domain []domain.Example) ExampleListResponse {
+	list := make(ExampleListResponse, 0, len(domain))
+	for _, m := range domain {
 		list = append(list, *ToExampleResponse(&m))
 	}
 	return list

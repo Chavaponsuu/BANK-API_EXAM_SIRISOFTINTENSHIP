@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/krizad/go-gin-api/models"
+import "github.com/krizad/go-gin-api/internal/core/domain"
 
 type TransactionRequest struct {
 	Amount      float64 `json:"amount" binding:"gt=0"`
@@ -17,7 +17,7 @@ type TransactionResponse struct {
 	CreatedAt      string  `json:"created_at"`
 }
 
-func ToTransactionResponse(m *models.Transaction) *TransactionResponse {
+func ToTransactionResponse(m *domain.Transaction) *TransactionResponse {
 	return &TransactionResponse{
 		TransactionRef: m.TransactionRef,
 		TrasactionType: m.TransactionType,
@@ -29,8 +29,8 @@ func ToTransactionResponse(m *models.Transaction) *TransactionResponse {
 	}
 }
 
-func ToTransactionModel(a *models.Account) *models.Transaction {
-	return &models.Transaction{
+func ToTransactionModel(a *domain.Account) *domain.Transaction {
+	return &domain.Transaction{
 		AccountID:       a.ID,
 		TransactionRef:  "",
 		TransactionType: "DEPOSIT",

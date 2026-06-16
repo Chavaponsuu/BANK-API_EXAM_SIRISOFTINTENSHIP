@@ -9,15 +9,13 @@ import (
 	"syscall"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/krizad/go-gin-api/config"
 	"github.com/krizad/go-gin-api/db"
-	_ "github.com/krizad/go-gin-api/docs"
-	"github.com/krizad/go-gin-api/handlers"
-	"github.com/krizad/go-gin-api/middleware"
-	"github.com/krizad/go-gin-api/repositories"
-	"github.com/krizad/go-gin-api/routes"
-	"github.com/krizad/go-gin-api/services"
+	"github.com/krizad/go-gin-api/internal/adapters/http/handlers"
+	"github.com/krizad/go-gin-api/internal/adapters/http/middleware"
+	"github.com/krizad/go-gin-api/internal/adapters/http/routes"
+	"github.com/krizad/go-gin-api/internal/adapters/repositories"
+	"github.com/krizad/go-gin-api/internal/core/services"
 )
 
 // type application struct {

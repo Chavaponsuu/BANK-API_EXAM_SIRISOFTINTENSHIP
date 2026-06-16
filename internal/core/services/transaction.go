@@ -5,36 +5,30 @@ import (
 	"fmt"
 
 	"github.com/krizad/go-gin-api/constants"
-	"github.com/krizad/go-gin-api/models"
-	"github.com/krizad/go-gin-api/repositories"
+	"github.com/krizad/go-gin-api/internal/core/domain"
+	"github.com/krizad/go-gin-api/internal/core/ports"
 )
 
-type TransactionService interface {
-	Deposit(ctx context.Context, accountNumber string, amount float64, description string) (*models.Transaction, error)
-	Withdraw(ctx context.Context, accountNumber string, amount float64, description string) (*models.Transaction, error)
-	GetTransactionHistory(ctx context.Context, accountNumber string, page int, limit int) ([]*models.Transaction, int, error)
-}
-
 type transactionService struct {
-	accountRepo     repositories.AccountRepository
-	transactionRepo repositories.TransactionRepository
+	accountRepo     ports.AccountRepository
+	transactionRepo ports.TransactionRepository
 }
 
-func NewTransactionService(accountRepo repositories.AccountRepository, transactionRepo repositories.TransactionRepository) TransactionService {
+func NewTransactionService(accountRepo ports.AccountRepository, transactionRepo ports.TransactionRepository) ports.TransactionService {
 	return &transactionService{
 		accountRepo:     accountRepo,
 		transactionRepo: transactionRepo,
 	}
 }
-func (s *transactionService) Deposit(ctx context.Context, accountNumber string, amount float64, description string) (*models.Transaction, error) {
+func (s *transactionService) Deposit(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error) {
 	return s.processTransaction(ctx, accountNumber, amount, "DEPOSIT", description)
 }
 
-func (s *transactionService) Withdraw(ctx context.Context, accountNumber string, amount float64, description string) (*models.Transaction, error) {
+func (s *transactionService) Withdraw(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error) {
 	return s.processTransaction(ctx, accountNumber, -amount, "WITHDRAW", description)
 }
 
-func (s *transactionService) processTransaction(ctx context.Context, accountNumber string, amount float64, txType string, description string) (*models.Transaction, error) {
+func (s *transactionService) processTransaction(ctx context.Context, accountNumber string, amount float64, txType string, description string) (*domain.Transaction, error) {
 	tx, err := s.accountRepo.BeginTx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -69,7 +63,7 @@ func (s *transactionService) processTransaction(ctx context.Context, accountNumb
 	if txType == "WITHDRAW" {
 		amount = -amount
 	}
-	createdTx, err := s.transactionRepo.CreateWithTx(ctx, tx, &models.Transaction{
+	createdTx, err := s.transactionRepo.CreateWithTx(ctx, tx, &domain.Transaction{
 		AccountID:       account.ID,
 		TransactionType: txType,
 		Amount:          amount,
@@ -89,7 +83,7 @@ func (s *transactionService) processTransaction(ctx context.Context, accountNumb
 }
 
 // GetTransactionHistory ดึงประวัติธุรกรรมของบัญชี
-func (s *transactionService) GetTransactionHistory(ctx context.Context, accountNumber string, page int, limit int) ([]*models.Transaction, int, error) {
+func (s *transactionService) GetTransactionHistory(ctx context.Context, accountNumber string, page int, limit int) ([]*domain.Transaction, int, error) {
 
 	account, err := s.accountRepo.GetByAccountNumber(ctx, accountNumber)
 	if err != nil {

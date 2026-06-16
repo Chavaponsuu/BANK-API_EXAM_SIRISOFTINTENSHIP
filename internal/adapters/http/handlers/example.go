@@ -5,10 +5,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/krizad/go-gin-api/db"
-	"github.com/krizad/go-gin-api/dto"
-	"github.com/krizad/go-gin-api/services"
+	"github.com/krizad/go-gin-api/internal/adapters/http/dto"
+	"github.com/krizad/go-gin-api/internal/core/services"
 )
 
 type ExampleHandler struct {
@@ -237,7 +236,7 @@ func (h *ExampleHandler) GetExampleByEmail(c *gin.Context) {
 		dto.Error(c, http.StatusNotFound, "example not found")
 		return
 	}
-	
+
 	dto.OK(c, dto.ToExampleResponse(example))
 }
 

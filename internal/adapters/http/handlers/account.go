@@ -5,15 +5,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/krizad/go-gin-api/constants"
-	"github.com/krizad/go-gin-api/dto"
-	"github.com/krizad/go-gin-api/services"
+	"github.com/krizad/go-gin-api/internal/adapters/http/dto"
+	"github.com/krizad/go-gin-api/internal/core/ports"
 )
 
 type AccountHandler struct {
-	service services.AccountService
+	service ports.AccountService
 }
 
-func NewAccountHandler(service services.AccountService) *AccountHandler {
+func NewAccountHandler(service ports.AccountService) *AccountHandler {
 	return &AccountHandler{service: service}
 }
 

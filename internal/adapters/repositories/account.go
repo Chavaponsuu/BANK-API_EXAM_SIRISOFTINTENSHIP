@@ -6,27 +6,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/krizad/go-gin-api/models"
+	"github.com/krizad/go-gin-api/internal/core/domain"
+	"github.com/krizad/go-gin-api/internal/core/ports"
 )
-
-type AccountRepository interface {
-	// Create(ctx context.Context, account *models.Account) (*models.Account, error)
-	CreateWithTx(ctx context.Context, tx *sql.Tx, account *models.Account) (*models.Account, error)
-	CheckCitizenIDExists(ctx context.Context, citizenID string) (bool, error)
-	BeginTx(ctx context.Context) (*sql.Tx, error)
-	GetByAccountNumber(ctx context.Context, accountNumber string) (*models.Account, error)
-	GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*models.Account, error)
-	GetByAccountList(ctx context.Context, page int, limit int) ([]*models.Account, int, error)
-	UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accountID int64, newBalance float64) error
-	UpdateStatus(ctx context.Context, tx *sql.Tx, accountNumber string, status string) error
-	GenerateAccountNumber(ctx context.Context, tx *sql.Tx) (string, error)
-}
 
 type AccountRepo struct {
 	db *sql.DB
 }
 
-func NewAccountRepository(db *sql.DB) AccountRepository {
+func NewAccountRepository(db *sql.DB) ports.AccountRepository {
 	return &AccountRepo{db: db}
 }
 
@@ -62,13 +50,13 @@ func (r *AccountRepo) CheckCitizenIDExists(ctx context.Context, citizenID string
 	return count > 0, nil
 }
 
-// func (r *AccountRepo) Create(ctx context.Context, account *models.Account) (*models.Account, error) {
+// func (r *AccountRepo) Create(ctx context.Context, account *domain.Account) (*domain.Account, error) {
 // 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 // 	defer cancel()
 // 	return r.createWithQuerier(ctx, r.db, account)
 // }
 
-func (r *AccountRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, account *models.Account) (*models.Account, error) {
+func (r *AccountRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, account *domain.Account) (*domain.Account, error) {
 	fmt.Println("account number ====== ", account.AccountNumber)
 	err := tx.QueryRowContext(ctx, `
 		INSERT INTO accounts (owner_name, citizen_id, phone_number, account_type, balance, account_number, status)
@@ -88,7 +76,7 @@ func (r *AccountRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, account *mod
 	return account, nil
 }
 
-// func (r *AccountRepo) createWithQuerier(ctx context.Context, q querier, account *models.Account) (*models.Account, error) {
+// func (r *AccountRepo) createWithQuerier(ctx context.Context, q querier, account *domain.Account) (*domain.Account, error) {
 // 	var err error
 // 	account.AccountNumber, err = generateAccountNumber(ctx, q)
 // 	if err != nil {
@@ -113,19 +101,19 @@ func (r *AccountRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, account *mod
 // 	return account, nil
 // }
 
-func (r *AccountRepo) GetByAccountNumber(ctx context.Context, accountNumber string) (*models.Account, error) {
+func (r *AccountRepo) GetByAccountNumber(ctx context.Context, accountNumber string) (*domain.Account, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	return r.getByAccountNumber(ctx, r.db, accountNumber, false)
 }
 
-func (r *AccountRepo) GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*models.Account, error) {
+func (r *AccountRepo) GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*domain.Account, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	return r.getByAccountNumber(ctx, tx, accountNumber, true)
 }
 
-func (r *AccountRepo) getByAccountNumber(ctx context.Context, q querier, accountNumber string, lock bool) (*models.Account, error) {
+func (r *AccountRepo) getByAccountNumber(ctx context.Context, q querier, accountNumber string, lock bool) (*domain.Account, error) {
 	query := `SELECT id, account_number, owner_name, citizen_id, phone_number, account_type, balance, status, created_at, updated_at
 		FROM accounts
 		WHERE account_number = $1`
@@ -133,7 +121,7 @@ func (r *AccountRepo) getByAccountNumber(ctx context.Context, q querier, account
 		query += " FOR UPDATE"
 	}
 
-	account := &models.Account{}
+	account := &domain.Account{}
 	err := q.QueryRowContext(ctx, query, accountNumber).Scan(
 		&account.ID,
 		&account.AccountNumber,
@@ -155,7 +143,7 @@ func (r *AccountRepo) getByAccountNumber(ctx context.Context, q querier, account
 
 	return account, nil
 }
-func (r *AccountRepo) GetByAccountList(ctx context.Context, limit int, offset int) ([]*models.Account, int, error) {
+func (r *AccountRepo) GetByAccountList(ctx context.Context, limit int, offset int) ([]*domain.Account, int, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	var total int
@@ -168,7 +156,7 @@ func (r *AccountRepo) GetByAccountList(ctx context.Context, limit int, offset in
 		return nil, 0, err
 	}
 
-	accountList := []*models.Account{}
+	accountList := []*domain.Account{}
 	query := `SELECT account_number,owner_name,account_type,balance,status FROM accounts ORDER BY account_number LIMIT $1 OFFSET $2`
 	rows, err := r.db.QueryContext(ctx, query, limit, offset)
 
@@ -178,7 +166,7 @@ func (r *AccountRepo) GetByAccountList(ctx context.Context, limit int, offset in
 	defer rows.Close()
 
 	for rows.Next() {
-		account := &models.Account{}
+		account := &domain.Account{}
 
 		err := rows.Scan(&account.AccountNumber, &account.OwnerName, &account.AccountType, &account.Balance, &account.Status)
 		if err != nil {

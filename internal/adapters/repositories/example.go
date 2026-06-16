@@ -5,15 +5,15 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/krizad/go-gin-api/models"
+	"github.com/krizad/go-gin-api/internal/core/domain"
 )
 
 type ExampleRepository interface {
-	Create(ctx context.Context, name, email string) (*models.Example, error)
-	GetByID(ctx context.Context, id int64) (*models.Example, error)
-	GetByEmail(ctx context.Context, email string) (*models.Example, error)
-	List(ctx context.Context) ([]models.Example, error)
-	Update(ctx context.Context, id int64, name, email string) (*models.Example, error)
+	Create(ctx context.Context, name, email string) (*domain.Example, error)
+	GetByID(ctx context.Context, id int64) (*domain.Example, error)
+	GetByEmail(ctx context.Context, email string) (*domain.Example, error)
+	List(ctx context.Context) ([]domain.Example, error)
+	Update(ctx context.Context, id int64, name, email string) (*domain.Example, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	Count(ctx context.Context) (int, error)
 }
@@ -26,8 +26,8 @@ func NewExampleRepository(db *sql.DB) ExampleRepository {
 	return &exampleRepo{db: db}
 }
 
-func (r *exampleRepo) Create(ctx context.Context, name, email string) (*models.Example, error) {
-	example := &models.Example{}
+func (r *exampleRepo) Create(ctx context.Context, name, email string) (*domain.Example, error) {
+	example := &domain.Example{}
 	err := r.db.QueryRowContext(ctx,
 		`INSERT INTO examples (name, email) VALUES ($1, $2) RETURNING id, name, email, created_at, updated_at`,
 		name, email,
@@ -38,8 +38,8 @@ func (r *exampleRepo) Create(ctx context.Context, name, email string) (*models.E
 	return example, nil
 }
 
-func (r *exampleRepo) GetByID(ctx context.Context, id int64) (*models.Example, error) {
-	example := &models.Example{}
+func (r *exampleRepo) GetByID(ctx context.Context, id int64) (*domain.Example, error) {
+	example := &domain.Example{}
 	err := r.db.QueryRowContext(ctx,
 		`SELECT id, name, email, created_at, updated_at FROM examples WHERE id = $1`, id,
 	).Scan(&example.ID, &example.Name, &example.Email, &example.CreatedAt, &example.UpdatedAt)
@@ -52,8 +52,8 @@ func (r *exampleRepo) GetByID(ctx context.Context, id int64) (*models.Example, e
 	return example, nil
 }
 
-func (r *exampleRepo) GetByEmail(ctx context.Context, email string) (*models.Example, error) {
-	example := &models.Example{}
+func (r *exampleRepo) GetByEmail(ctx context.Context, email string) (*domain.Example, error) {
+	example := &domain.Example{}
 	err := r.db.QueryRowContext(ctx,
 		`SELECT id, name, email, created_at, updated_at FROM examples WHERE email = $1`, email,
 	).Scan(&example.ID, &example.Name, &example.Email, &example.CreatedAt, &example.UpdatedAt)
@@ -66,7 +66,7 @@ func (r *exampleRepo) GetByEmail(ctx context.Context, email string) (*models.Exa
 	return example, nil
 }
 
-func (r *exampleRepo) List(ctx context.Context) ([]models.Example, error) {
+func (r *exampleRepo) List(ctx context.Context) ([]domain.Example, error) {
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT id, name, email, created_at, updated_at FROM examples ORDER BY id`,
 	)
@@ -75,22 +75,22 @@ func (r *exampleRepo) List(ctx context.Context) ([]models.Example, error) {
 	}
 	defer rows.Close()
 
-	var examples []models.Example
+	var examples []domain.Example
 	for rows.Next() {
-		var e models.Example
+		var e domain.Example
 		if err := rows.Scan(&e.ID, &e.Name, &e.Email, &e.CreatedAt, &e.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("scan example: %w", err)
 		}
 		examples = append(examples, e)
 	}
 	if examples == nil {
-		examples = []models.Example{}
+		examples = []domain.Example{}
 	}
 	return examples, rows.Err()
 }
 
-func (r *exampleRepo) Update(ctx context.Context, id int64, name, email string) (*models.Example, error) {
-	example := &models.Example{}
+func (r *exampleRepo) Update(ctx context.Context, id int64, name, email string) (*domain.Example, error) {
+	example := &domain.Example{}
 	err := r.db.QueryRowContext(ctx,
 		`UPDATE examples SET name = $1, email = $2, updated_at = NOW() WHERE id = $3 RETURNING id, name, email, created_at, updated_at`,
 		name, email, id,

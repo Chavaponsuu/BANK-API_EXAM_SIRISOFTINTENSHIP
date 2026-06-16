@@ -1,8 +1,6 @@
 package dto
 
-import (
-	"github.com/krizad/go-gin-api/models"
-)
+import "github.com/krizad/go-gin-api/internal/core/domain"
 
 // Request DTOs
 type CreateAccountRequest struct {
@@ -13,8 +11,8 @@ type CreateAccountRequest struct {
 	InitialBalance float64 `json:"initial_balance" binding:"gte=0"`
 }
 
-func ToCreateAccountRequest(accountReq *CreateAccountRequest) *models.Account {
-	return &models.Account{
+func ToCreateAccountRequest(accountReq *CreateAccountRequest) *domain.Account {
+	return &domain.Account{
 		OwnerName:   accountReq.OwnerName,
 		CitizenID:   accountReq.CitizenID,
 		PhoneNumber: accountReq.PhoneNumber,
@@ -40,7 +38,7 @@ type AccountDeleteResponse struct {
 }
 
 // Mapper functions
-func ToAccountResponse(m *models.Account) *AccountResponse {
+func ToAccountResponse(m *domain.Account) *AccountResponse {
 	return &AccountResponse{
 		AccountNumber: m.AccountNumber,
 		OwnerName:     m.OwnerName,
@@ -55,7 +53,7 @@ type CloseAccountResponse struct {
 	Status        string `json:"status"`
 }
 
-func ToCloseAccountResponse(m *models.Account) *CloseAccountResponse {
+func ToCloseAccountResponse(m *domain.Account) *CloseAccountResponse {
 	return &CloseAccountResponse{
 		AccountNumber: m.AccountNumber,
 		Status:        m.Status,

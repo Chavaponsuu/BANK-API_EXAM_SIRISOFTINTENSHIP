@@ -6,21 +6,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/krizad/go-gin-api/models"
+	"github.com/krizad/go-gin-api/internal/core/domain"
+	"github.com/krizad/go-gin-api/internal/core/ports"
 )
-
-type TransactionRepository interface {
-	CreateWithTx(ctx context.Context, tx *sql.Tx, transaction *models.Transaction) (*models.Transaction, error)
-	GenerateTransactionRef(ctx context.Context, tx *sql.Tx) (string, error)
-	// GetByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*models.Transaction, int, error)
-	GetTxByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*models.Transaction, int, error)
-}
 
 type TransactionRepo struct {
 	db *sql.DB
 }
 
-func NewTransactionRepository(db *sql.DB) TransactionRepository {
+func NewTransactionRepository(db *sql.DB) ports.TransactionRepository {
 	return &TransactionRepo{db: db}
 }
 
@@ -48,7 +42,7 @@ func (r *TransactionRepo) GenerateTransactionRef(ctx context.Context, tx *sql.Tx
 	return transactionRef, nil
 }
 
-func (r *TransactionRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, transaction *models.Transaction) (*models.Transaction, error) {
+func (r *TransactionRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, transaction *domain.Transaction) (*domain.Transaction, error) {
 	query := `INSERT INTO transactions (account_id, transaction_ref, transaction_type, amount, balance_before, balance_after, description)
 	 VALUES ($1, $2, $3, $4, $5, $6, $7)
 	 RETURNING id, transaction_ref , created_at`
@@ -74,7 +68,7 @@ func (r *TransactionRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, transact
 }
 
 // GetByAccountID ดึงประวัติธุรกรรมของบัญชี เรียงจากใหม่ไปเก่า
-func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64, limit int, offset int) ([]*models.Transaction, int, error) {
+func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64, limit int, offset int) ([]*domain.Transaction, int, error) {
 	// Get total count
 	var total int
 	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM transactions WHERE account_id = $1`, accountID).Scan(&total)
@@ -95,9 +89,9 @@ func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64,
 	}
 	defer rows.Close()
 
-	transactions := []*models.Transaction{}
+	transactions := []*domain.Transaction{}
 	for rows.Next() {
-		tx := &models.Transaction{}
+		tx := &domain.Transaction{}
 		err := rows.Scan(
 			&tx.ID,
 			&tx.AccountID,

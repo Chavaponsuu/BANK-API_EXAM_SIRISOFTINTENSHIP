@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/krizad/go-gin-api/dto"
+	"github.com/krizad/go-gin-api/internal/adapters/http/dto"
 )
 
 // Account-related errors

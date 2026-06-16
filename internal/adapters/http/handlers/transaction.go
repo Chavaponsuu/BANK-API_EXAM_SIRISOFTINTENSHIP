@@ -5,15 +5,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/krizad/go-gin-api/constants"
-	"github.com/krizad/go-gin-api/dto"
-	"github.com/krizad/go-gin-api/services"
+	"github.com/krizad/go-gin-api/internal/adapters/http/dto"
+	"github.com/krizad/go-gin-api/internal/core/ports"
 )
 
 type TransactionHandler struct {
-	service services.TransactionService
+	service ports.TransactionService
 }
 
-func NewTransactionHandler(service services.TransactionService) *TransactionHandler {
+func NewTransactionHandler(service ports.TransactionService) *TransactionHandler {
 	return &TransactionHandler{service: service}
 }
 
