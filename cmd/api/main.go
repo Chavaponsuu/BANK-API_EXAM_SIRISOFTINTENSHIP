@@ -16,7 +16,6 @@ import (
 	"github.com/krizad/go-gin-api/internal/adapters/http/routes"
 	"github.com/krizad/go-gin-api/internal/adapters/repositories"
 	"github.com/krizad/go-gin-api/internal/core/services"
-	// "github.com/krizad/go-gin-api/docs"
 )
 
 // @title			Go Gin Example API
