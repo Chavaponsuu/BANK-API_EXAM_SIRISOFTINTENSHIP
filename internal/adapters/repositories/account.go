@@ -163,8 +163,7 @@ func (r *AccountRepo) GetByAccountList(ctx context.Context, limit int, offset in
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
-
+	defer func() { _ = rows.Close() }()
 	for rows.Next() {
 		account := &domain.Account{}
 

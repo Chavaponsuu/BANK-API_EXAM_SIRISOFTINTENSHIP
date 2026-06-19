@@ -36,7 +36,7 @@ func (s *accountService) CreateAccount(ctx context.Context, account *domain.Acco
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		}
 	}()
 
@@ -104,7 +104,7 @@ func (s *accountService) CloseAccount(ctx context.Context, accountNumber string)
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		}
 	}()
 	account, err := s.repo.GetByAccountNumberWithLock(ctx, tx, accountNumber)
