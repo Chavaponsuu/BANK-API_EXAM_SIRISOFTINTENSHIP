@@ -62,8 +62,8 @@ jobs:
           file: ./dockerfile # ← ระบุ Dockerfile ใน root ชัดเจน
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/myapp:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/myapp:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/bank-api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/bank-api:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
