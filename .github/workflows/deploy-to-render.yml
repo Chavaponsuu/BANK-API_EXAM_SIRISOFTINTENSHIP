@@ -19,7 +19,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "go.mod" # แก้จาก 1.26 → 1.24 (เวอร์ชันล่าสุดที่มีจริง)
+          go-version: "1.25.0" # แก้จาก 1.26 → 1.24 (เวอร์ชันล่าสุดที่มีจริง)
           cache: true
 
       - name: Install dependencies
