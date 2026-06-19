@@ -43,7 +43,7 @@ func main() {
 	cfg := config.Load()
 
 	db.Connect(cfg)
-	_ = DB.Close()
+	defer db.Close()
 
 	if *migrateCmd != "" {
 		handleMigrateCmd(*migrateCmd)
