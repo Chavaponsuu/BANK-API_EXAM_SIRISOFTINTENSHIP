@@ -119,6 +119,6 @@ func ForceMigration(version int) error {
 
 func Close() {
 	if DB != nil {
-		DB.Close()
+		_ = DB.Close()
 	}
 }

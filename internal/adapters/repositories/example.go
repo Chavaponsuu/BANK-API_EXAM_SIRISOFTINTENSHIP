@@ -73,7 +73,7 @@ func (r *exampleRepo) List(ctx context.Context) ([]domain.Example, error) {
 	if err != nil {
 		return nil, fmt.Errorf("list examples: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var examples []domain.Example
 	for rows.Next() {

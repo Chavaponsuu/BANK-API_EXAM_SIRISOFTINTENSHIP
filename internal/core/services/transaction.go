@@ -35,7 +35,7 @@ func (s *transactionService) processTransaction(ctx context.Context, accountNumb
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		}
 	}()
 

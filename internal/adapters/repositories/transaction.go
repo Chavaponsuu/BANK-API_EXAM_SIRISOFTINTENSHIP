@@ -87,7 +87,7 @@ func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64,
 	if err != nil {
 		return nil, 0, fmt.Errorf("query transactions: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	transactions := []*domain.Transaction{}
 	for rows.Next() {
