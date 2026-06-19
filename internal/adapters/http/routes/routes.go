@@ -5,6 +5,7 @@ import (
 	"github.com/krizad/go-gin-api/internal/adapters/http/handlers"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	 _ "github.com/krizad/go-gin-api/docs"
 )
 
 func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandler, th *handlers.TransactionHandler) {

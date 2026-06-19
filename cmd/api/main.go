@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/krizad/go-gin-api/config"
 	"github.com/krizad/go-gin-api/db"
@@ -16,27 +16,25 @@ import (
 	"github.com/krizad/go-gin-api/internal/adapters/http/routes"
 	"github.com/krizad/go-gin-api/internal/adapters/repositories"
 	"github.com/krizad/go-gin-api/internal/core/services"
+	// "github.com/krizad/go-gin-api/docs"
 )
 
-// type application struct {
-// 	models models.
-// 	// jwtSecret string
-// }
 
-//	@title			Go Gin Example API
-//	@version		1.0
-//	@description	CRUD API built with Go and Gin framework, connected to PostgreSQL.
-//	@termsOfService	http://swagger.io/terms/
 
-//	@contact.name	API Support
-//	@contact.url	http://www.example.com/support
-//	@contact.email	support@example.com
+	// @title			Go Gin Example API
+	// @version		1.0
+	// @description	CRUD API built with Go and Gin framework, connected to PostgreSQL.
+	// @termsOfService	http://swagger.io/terms/
 
-//	@license.name	MIT
-//	@license.url	https://opensource.org/licenses/MIT
+	// @contact.name	API Support
+	// @contact.url	http://www.example.com/support
+	// @contact.email	support@example.com
 
-//	@host		localhost:8080
-//	@BasePath	/api/v1
+	// @license.name	MIT
+	// @license.url	https://opensource.org/licenses/MIT
+
+
+	// @BasePath	/api/v1
 
 func main() {
 	migrateCmd := flag.String("migrate", "", "run migration command: up, down")

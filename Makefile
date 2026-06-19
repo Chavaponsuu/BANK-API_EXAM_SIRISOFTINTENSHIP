@@ -24,11 +24,16 @@ clean: ## Remove build artifacts
 test: ## Run tests
 	$(GO) test -v -race ./...
 
+test-coverage: ## Run tests with coverage
+	$(GO) test -v -race -coverprofile=coverage/coverage.out -covermode=atomic -coverpkg=./... ./...
+	$(GO) tool cover -html=coverage/coverage.out -o coverage.html
+	$(GO) tool cover -func=coverage/coverage.out
+
 lint: ## Run go vet
 	$(GO) vet ./...
 
 swagger: ## Generate swagger docs
-	PATH="$(HOME)/go/bin:$$PATH" $(SWAG) init -g main.go --parseDependency --parseInternal
+	PATH="$(HOME)/go/bin:$$PATH" $(SWAG) init -g cmd/api/main.go --parseDependency --parseInternal
 
 db-up: ## Start PostgreSQL container
 	$(DOCKER) up -d
@@ -45,7 +50,8 @@ migrate-up: ## Run database migrations up
 
 migrate-down: ## Rollback all database migrations
 	$(GO) run main.go -migrate=down
-
+sonar-scan:
+	$(DOCKER) -f docker-compose-scan.yml up -d 
 dev: db-up swagger ## Start PostgreSQL, run migrations, and start the API
 	@echo "waiting for PostgreSQL to be ready..."
 	@sleep 2

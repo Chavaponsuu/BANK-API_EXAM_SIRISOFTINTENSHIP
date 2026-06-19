@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  sonar-scanner:
+    container_name: sonar-scanner
+    platform: linux/amd64
+    image: sonarsource/sonar-scanner-cli
+    volumes:
+      - .:/usr/src # Mount the current directory as the project directory
+    working_dir: /usr/src
+    command: sonar-scanner
+    networks:
+      - sonarqube_sonarqube-network
+
+# add network name sonarqube-network
+networks:
+  sonarqube_sonarqube-network:
+    external: true

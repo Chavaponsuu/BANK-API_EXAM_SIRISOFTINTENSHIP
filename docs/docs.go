@@ -56,7 +56,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
@@ -64,11 +64,11 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/dto.AccountResponse"
+                                                "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.AccountResponse"
                                             }
                                         },
                                         "meta": {
-                                            "$ref": "#/definitions/dto.Meta"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta"
                                         }
                                     }
                                 }
@@ -78,13 +78,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid page or limit parameters",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Failed to get account list",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -108,7 +108,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateAccountRequest"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.CreateAccountRequest"
                         }
                     }
                 ],
@@ -118,13 +118,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.AccountResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.AccountResponse"
                                         }
                                     }
                                 }
@@ -134,19 +134,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid input: citizen_id must be 13 digits, account_type must be SAVING or CURRENT, or balance cannot be negative",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "409": {
                         "description": "Citizen ID already exists",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Failed to create account",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -177,13 +177,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.AccountResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.AccountResponse"
                                         }
                                     }
                                 }
@@ -193,19 +193,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid account_number format",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Account not found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -236,13 +236,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.CloseAccountResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.CloseAccountResponse"
                                         }
                                     }
                                 }
@@ -252,25 +252,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid account number format",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Account not found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "409": {
                         "description": "Account is already closed",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Failed to close account",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -303,7 +303,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.TransactionRequest"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionRequest"
                         }
                     }
                 ],
@@ -313,13 +313,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.TransactionResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse"
                                         }
                                     }
                                 }
@@ -329,25 +329,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Amount must be greater than 0",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Account not found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "409": {
                         "description": "Account is not active or already closed",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Failed to update account balance",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -392,7 +392,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
@@ -400,11 +400,11 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/dto.TransactionResponse"
+                                                "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse"
                                             }
                                         },
                                         "meta": {
-                                            "$ref": "#/definitions/dto.Meta"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta"
                                         }
                                     }
                                 }
@@ -414,19 +414,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid account_number format or pagination parameters",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Account not found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Failed to get transaction history",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -459,7 +459,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.TransactionRequest"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionRequest"
                         }
                     }
                 ],
@@ -469,13 +469,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.TransactionResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse"
                                         }
                                     }
                                 }
@@ -485,25 +485,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Insufficient balance or amount must be greater than 0",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Account not found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "409": {
                         "description": "Account is not active or already closed",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Failed to update account balance",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -525,7 +525,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
@@ -533,7 +533,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/dto.ExampleResponse"
+                                                "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse"
                                             }
                                         }
                                     }
@@ -544,7 +544,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -568,7 +568,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateExampleRequest"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.CreateExampleRequest"
                         }
                     }
                 ],
@@ -578,13 +578,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse"
                                         }
                                     }
                                 }
@@ -594,13 +594,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -631,13 +631,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse"
                                         }
                                     }
                                 }
@@ -647,19 +647,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -690,13 +690,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse"
                                         }
                                     }
                                 }
@@ -706,19 +706,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -749,7 +749,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateExampleRequest"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.UpdateExampleRequest"
                         }
                     }
                 ],
@@ -759,13 +759,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse"
                                         }
                                     }
                                 }
@@ -775,19 +775,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -816,13 +816,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.ExampleDeleteResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleDeleteResponse"
                                         }
                                     }
                                 }
@@ -832,19 +832,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -875,7 +875,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.PatchExampleRequest"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.PatchExampleRequest"
                         }
                     }
                 ],
@@ -885,13 +885,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/dto.BaseResponse"
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse"
                                         }
                                     }
                                 }
@@ -901,19 +901,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -933,13 +933,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     },
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponse"
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
                         }
                     }
                 }
@@ -947,7 +947,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.AccountResponse": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.AccountResponse": {
             "type": "object",
             "properties": {
                 "account_number": {
@@ -971,7 +971,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.BaseResponse": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse": {
             "type": "object",
             "properties": {
                 "data": {},
@@ -983,14 +983,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "meta": {
-                    "$ref": "#/definitions/dto.Meta"
+                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta"
                 },
                 "success": {
                     "type": "boolean"
                 }
             }
         },
-        "dto.CloseAccountResponse": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.CloseAccountResponse": {
             "type": "object",
             "properties": {
                 "account_number": {
@@ -1001,7 +1001,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateAccountRequest": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.CreateAccountRequest": {
             "type": "object",
             "required": [
                 "account_type",
@@ -1032,7 +1032,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateExampleRequest": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.CreateExampleRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -1049,7 +1049,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.ExampleDeleteResponse": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleDeleteResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -1057,7 +1057,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.ExampleResponse": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1082,7 +1082,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.Meta": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta": {
             "type": "object",
             "properties": {
                 "page": {
@@ -1096,7 +1096,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.PatchExampleRequest": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.PatchExampleRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1109,7 +1109,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.TransactionRequest": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionRequest": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -1121,7 +1121,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.TransactionResponse": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -1147,7 +1147,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdateExampleRequest": {
+        "github_com_krizad_go-gin-api_internal_adapters_http_dto.UpdateExampleRequest": {
             "type": "object",
             "required": [
                 "email",

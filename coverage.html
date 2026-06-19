@@ -1,0 +1,3338 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>api: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/krizad/go-gin-api/cmd/api/main.go (0.0%)</option>
+				
+				<option value="file1">github.com/krizad/go-gin-api/config/config.go (0.0%)</option>
+				
+				<option value="file2">github.com/krizad/go-gin-api/constants/errors.go (75.0%)</option>
+				
+				<option value="file3">github.com/krizad/go-gin-api/db/db.go (0.0%)</option>
+				
+				<option value="file4">github.com/krizad/go-gin-api/docs/docs.go (0.0%)</option>
+				
+				<option value="file5">github.com/krizad/go-gin-api/internal/adapters/http/dto/account.go (100.0%)</option>
+				
+				<option value="file6">github.com/krizad/go-gin-api/internal/adapters/http/dto/example.go (100.0%)</option>
+				
+				<option value="file7">github.com/krizad/go-gin-api/internal/adapters/http/dto/response.go (77.8%)</option>
+				
+				<option value="file8">github.com/krizad/go-gin-api/internal/adapters/http/dto/transaction.go (50.0%)</option>
+				
+				<option value="file9">github.com/krizad/go-gin-api/internal/adapters/http/handlers/account.go (80.5%)</option>
+				
+				<option value="file10">github.com/krizad/go-gin-api/internal/adapters/http/handlers/example.go (62.2%)</option>
+				
+				<option value="file11">github.com/krizad/go-gin-api/internal/adapters/http/handlers/transaction.go (77.3%)</option>
+				
+				<option value="file12">github.com/krizad/go-gin-api/internal/adapters/http/middleware/middleware.go (0.0%)</option>
+				
+				<option value="file13">github.com/krizad/go-gin-api/internal/adapters/http/routes/routes.go (0.0%)</option>
+				
+				<option value="file14">github.com/krizad/go-gin-api/internal/adapters/repositories/account.go (0.0%)</option>
+				
+				<option value="file15">github.com/krizad/go-gin-api/internal/adapters/repositories/example.go (0.0%)</option>
+				
+				<option value="file16">github.com/krizad/go-gin-api/internal/adapters/repositories/transaction.go (0.0%)</option>
+				
+				<option value="file17">github.com/krizad/go-gin-api/internal/core/services/account.go (42.4%)</option>
+				
+				<option value="file18">github.com/krizad/go-gin-api/internal/core/services/example.go (94.1%)</option>
+				
+				<option value="file19">github.com/krizad/go-gin-api/internal/core/services/transaction.go (55.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "flag"
+        "fmt"
+        "log"
+        "os"
+        "os/signal"
+        "syscall"
+
+        "github.com/gin-gonic/gin"
+        "github.com/krizad/go-gin-api/config"
+        "github.com/krizad/go-gin-api/db"
+        "github.com/krizad/go-gin-api/internal/adapters/http/handlers"
+        "github.com/krizad/go-gin-api/internal/adapters/http/middleware"
+        "github.com/krizad/go-gin-api/internal/adapters/http/routes"
+        "github.com/krizad/go-gin-api/internal/adapters/repositories"
+        "github.com/krizad/go-gin-api/internal/core/services"
+)
+
+// type application struct {
+//         models models.
+//         // jwtSecret string
+// }
+
+//        @title                        Go Gin Example API
+//        @version                1.0
+//        @description        CRUD API built with Go and Gin framework, connected to PostgreSQL.
+//        @termsOfService        http://swagger.io/terms/
+
+//        @contact.name        API Support
+//        @contact.url        http://www.example.com/support
+//        @contact.email        support@example.com
+
+//        @license.name        MIT
+//        @license.url        https://opensource.org/licenses/MIT
+
+//        @host                localhost:8080
+//        @BasePath        /api/v1
+
+func main() <span class="cov0" title="0">{
+        migrateCmd := flag.String("migrate", "", "run migration command: up, down")
+        flag.Parse()
+
+        cfg := config.Load()
+
+        db.Connect(cfg)
+        defer db.Close()
+
+        if *migrateCmd != "" </span><span class="cov0" title="0">{
+                handleMigrateCmd(*migrateCmd)
+                return
+        }</span>
+
+        <span class="cov0" title="0">if cfg.AutoMigrate </span><span class="cov0" title="0">{
+                if err := db.RunMigrations(); err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("migration failed: %v", err)
+                }</span>
+        } else<span class="cov0" title="0"> {
+                log.Println("auto-migrate disabled (set AUTO_MIGRATE=true to enable)")
+        }</span>
+
+        <span class="cov0" title="0">r := gin.New()
+        r.Use(middleware.Recovery())
+        r.Use(middleware.Logger())
+        r.Use(middleware.CORS())
+
+        // Example handler setup
+        repo := repositories.NewExampleRepository(db.DB)
+        svc := services.NewExampleService(repo)
+        exampleHandler := handlers.NewExampleHandler(svc)
+        transacRepo := repositories.NewTransactionRepository(db.DB)
+
+        // Account handler setup
+        accountRepo := repositories.NewAccountRepository(db.DB)
+        transacSvc := services.NewTransactionService(accountRepo, transacRepo)
+        // transactionRepo := repositories.NewTransactionRepository(db.DB)
+        accountSvc := services.NewAccountService(accountRepo, transacRepo)
+        transacHandler := handlers.NewTransactionHandler(transacSvc)
+        accountHandler := handlers.NewAccountHandler(accountSvc)
+
+        routes.Setup(r, exampleHandler, accountHandler, transacHandler)
+
+        quit := make(chan os.Signal, 1)
+        signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+        go func() </span><span class="cov0" title="0">{
+                addr := fmt.Sprintf(":%s", cfg.AppPort)
+                log.Printf("server starting on %s", addr)
+                if err := r.Run(addr); err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("server failed: %v", err)
+                }</span>
+        }()
+
+        <span class="cov0" title="0">&lt;-quit
+        log.Println("shutting down server...")</span>
+}
+
+func handleMigrateCmd(cmd string) <span class="cov0" title="0">{
+        switch cmd </span>{
+        case "up":<span class="cov0" title="0">
+                if err := db.RunMigrations(); err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("migration up failed: %v", err)
+                }</span>
+                <span class="cov0" title="0">log.Println("migrations applied successfully")</span>
+        case "down":<span class="cov0" title="0">
+                if err := db.RollbackMigrations(); err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("migration down failed: %v", err)
+                }</span>
+                <span class="cov0" title="0">log.Println("migrations rolled back successfully")</span>
+        default:<span class="cov0" title="0">
+                log.Fatalf("unknown migrate command: %s (use 'up' or 'down')", cmd)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package config
+
+import (
+        "fmt"
+        "os"
+        "strconv"
+)
+
+type Config struct {
+        DBHost     string
+        DBPort     string
+        DBUser     string
+        DBPassword string
+        DBName     string
+        DBSSLMode  string
+        AppPort    string
+        AutoMigrate bool
+}
+
+func (c Config) DSN() string <span class="cov0" title="0">{
+        return fmt.Sprintf(
+                "host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+                c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName, c.DBSSLMode,
+        )
+}</span>
+
+func (c Config) DSNWithoutDB() string <span class="cov0" title="0">{
+        return fmt.Sprintf(
+                "host=%s port=%s user=%s password=%s sslmode=%s",
+                c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBSSLMode,
+        )
+}</span>
+
+func Load() *Config <span class="cov0" title="0">{
+        return &amp;Config{
+                DBHost:      getEnv("DB_HOST", "localhost"),
+                DBPort:      getEnv("DB_PORT", "5432"),
+                DBUser:      getEnv("DB_USER", "postgres"),
+                DBPassword:  getEnv("DB_PASSWORD", "postgres"),
+                DBName:      getEnv("DB_NAME", "go_gin_api"),
+                DBSSLMode:   getEnv("DB_SSLMODE", "disable"),
+                AppPort:     getEnv("APP_PORT", "8080"),
+                AutoMigrate: getEnvBool("AUTO_MIGRATE", true),
+        }
+}</span>
+
+func getEnv(key, fallback string) string <span class="cov0" title="0">{
+        if v := os.Getenv(key); v != "" </span><span class="cov0" title="0">{
+                return v
+        }</span>
+        <span class="cov0" title="0">return fallback</span>
+}
+
+func getEnvBool(key string, fallback bool) bool <span class="cov0" title="0">{
+        if v := os.Getenv(key); v != "" </span><span class="cov0" title="0">{
+                b, err := strconv.ParseBool(v)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fallback
+                }</span>
+                <span class="cov0" title="0">return b</span>
+        }
+        <span class="cov0" title="0">return fallback</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package constants
+
+import (
+        "errors"
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+        "github.com/krizad/go-gin-api/internal/adapters/http/dto"
+)
+
+// Account-related errors
+var (
+        ErrAccountNotFound      = errors.New("account not found")
+        ErrAccountAlreadyClosed = errors.New("account is already closed")
+        ErrAccountNotActive     = errors.New("account is not active")
+        ErrCitizenIDExists      = errors.New("citizen_id already exists")
+        ErrNegativeBalance      = errors.New("balance cannot be negative")
+)
+
+// Transaction-related errors
+var (
+        ErrInsufficientBalance   = errors.New("insufficient balance")
+        ErrFailedToUpdateBalance = errors.New("failed to update account balance")
+)
+
+// Generic errors
+var (
+        ErrInternal        = errors.New("internal error")
+        ErrOperationFailed = errors.New("operation failed")
+)
+
+// ErrorStatusMap maps errors to HTTP status codes
+var ErrorStatusMap = map[error]int{
+        ErrCitizenIDExists:      http.StatusConflict,
+        ErrAccountNotFound:      http.StatusNotFound,
+        ErrAccountAlreadyClosed: http.StatusConflict,
+        ErrOperationFailed:      http.StatusInternalServerError,
+        ErrAccountNotActive:     http.StatusConflict,
+        ErrInsufficientBalance:  http.StatusBadRequest,
+        ErrInternal:             http.StatusInternalServerError,
+}
+
+// HandleError handles error responses with appropriate HTTP status codes
+func HandleError(c *gin.Context, err error) <span class="cov10" title="6">{
+        status, ok := ErrorStatusMap[err]
+        if !ok </span><span class="cov0" title="0">{
+                status = http.StatusInternalServerError
+        }</span>
+        <span class="cov10" title="6">dto.Error(c, status, err.Error())</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package db
+
+import (
+        "database/sql"
+        "fmt"
+        "log"
+        "time"
+
+        "github.com/golang-migrate/migrate/v4"
+        "github.com/golang-migrate/migrate/v4/database/postgres"
+        "github.com/golang-migrate/migrate/v4/source/iofs"
+        _ "github.com/lib/pq"
+
+        "github.com/krizad/go-gin-api/config"
+        "github.com/krizad/go-gin-api/migrations"
+)
+
+var DB *sql.DB
+
+func Connect(cfg *config.Config) <span class="cov0" title="0">{
+        var err error
+        DB, err = sql.Open("postgres", cfg.DSN())
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("failed to open database: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">DB.SetMaxOpenConns(25)
+        DB.SetMaxIdleConns(5)
+        DB.SetConnMaxLifetime(5 * time.Minute)
+
+        if err = DB.Ping(); err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("failed to ping database: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">fmt.Println("connected to PostgreSQL")</span>
+}
+
+func RunMigrations() error <span class="cov0" title="0">{
+        source, err := iofs.New(migrations.FS, ".")
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create iofs source: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">driver, err := postgres.WithInstance(DB, &amp;postgres.Config{})
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create postgres driver: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">m, err := migrate.NewWithInstance("iofs", source, "postgres", driver)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create migrate instance: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">if err := m.Up(); err != nil &amp;&amp; err != migrate.ErrNoChange </span><span class="cov0" title="0">{
+                return fmt.Errorf("migration up failed: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">version, dirty, err := m.Version()
+        if err != nil &amp;&amp; err != migrate.ErrNilVersion </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to get migration version: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">if err == migrate.ErrNilVersion </span><span class="cov0" title="0">{
+                fmt.Println("migrations: no migrations applied")
+        }</span> else<span class="cov0" title="0"> {
+                fmt.Printf("migrations: at version %d (dirty=%v)\n", version, dirty)
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+func RollbackMigrations() error <span class="cov0" title="0">{
+        source, err := iofs.New(migrations.FS, ".")
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create iofs source: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">driver, err := postgres.WithInstance(DB, &amp;postgres.Config{})
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create postgres driver: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">m, err := migrate.NewWithInstance("iofs", source, "postgres", driver)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create migrate instance: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">if err := m.Down(); err != nil &amp;&amp; err != migrate.ErrNoChange </span><span class="cov0" title="0">{
+                return fmt.Errorf("migration down failed: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">fmt.Println("migrations: rolled back all")
+        return nil</span>
+}
+
+func ForceMigration(version int) error <span class="cov0" title="0">{
+        source, err := iofs.New(migrations.FS, ".")
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create iofs source: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">driver, err := postgres.WithInstance(DB, &amp;postgres.Config{})
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create postgres driver: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">m, err := migrate.NewWithInstance("iofs", source, "postgres", driver)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create migrate instance: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">if err := m.Force(version); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("migration force failed: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">fmt.Printf("migrations: forced to version %d\n", version)
+        return nil</span>
+}
+
+func Close() <span class="cov0" title="0">{
+        if DB != nil </span><span class="cov0" title="0">{
+                DB.Close()
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">// Package docs Code generated by swaggo/swag. DO NOT EDIT
+package docs
+
+import "github.com/swaggo/swag"
+
+const docTemplate = `{
+    "schemes": {{ marshal .Schemes }},
+    "swagger": "2.0",
+    "info": {
+        "description": "{{escape .Description}}",
+        "title": "{{.Title}}",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.example.com/support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "{{.Version}}"
+    },
+    "host": "{{.Host}}",
+    "basePath": "{{.BasePath}}",
+    "paths": {
+        "/accounts": {
+            "get": {
+                "description": "Retrieve a paginated list of all accounts ordered by ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "List all accounts with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (default: 1, min: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Items per page (default: 10, max: 100)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of accounts with pagination metadata",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.AccountResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.Meta"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page or limit parameters",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get account list",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new bank account record. If initial_balance \u003e 0, creates a DEPOSIT transaction atomically.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Account payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Account created successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AccountResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input: citizen_id must be 13 digits, account_type must be SAVING or CURRENT, or balance cannot be negative",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Citizen ID already exists",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create account",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{account_number}": {
+            "get": {
+                "description": "Retrieve account details by 10-digit account number.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get account by account number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AccountResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid account_number format",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{account_number}/close": {
+            "patch": {
+                "description": "Change account status from ACTIVE to CLOSED. Closed accounts cannot perform transactions (deposit/withdraw).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Close an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account closed successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CloseAccountResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid account number format",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Account is already closed",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to close account",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{account_number}/deposit": {
+            "post": {
+                "description": "Deposit a specified amount into the account. Creates a DEPOSIT transaction and updates account balance atomically.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Deposit money into an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Deposit request payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deposit successful",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TransactionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Amount must be greater than 0",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Account is not active or already closed",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update account balance",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{account_number}/transactions": {
+            "get": {
+                "description": "Retrieve paginated transaction history for an account, ordered by newest first (created_at DESC).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get transaction history of an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (default: 1, min: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Items per page (default: 10, max: 100)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction history with pagination",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.TransactionResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/dto.Meta"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid account_number format or pagination parameters",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get transaction history",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{account_number}/withdraw": {
+            "post": {
+                "description": "Withdraw a specified amount from the account. Validates sufficient balance, creates a WITHDRAW transaction, and updates account balance atomically.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Withdraw money from an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account Number (10 digits)",
+                        "name": "account_number",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Withdraw request payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Withdrawal successful",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.TransactionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Insufficient balance or amount must be greater than 0",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Account is not active or already closed",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update account balance",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/examples": {
+            "get": {
+                "description": "Retrieve a list of all example records.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "List all examples",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.ExampleResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new example record.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Create a new example",
+                "parameters": [
+                    {
+                        "description": "Example payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateExampleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/examples/search": {
+            "get": {
+                "description": "Search for an example record by email query parameter.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Find example by email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email address",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/examples/{id}": {
+            "get": {
+                "description": "Retrieve a single example by its ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Get an example by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Example ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Fully replace an existing example by ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Update an example",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Example ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Example payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateExampleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an example record by ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Delete an example",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Example ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleDeleteResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Partially update fields of an existing example by ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "examples"
+                ],
+                "summary": "Partial update an example",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Example ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Fields to patch",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatchExampleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExampleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Returns the health status of the API and database connectivity.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "API health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.AccountResponse": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "account_type": {
+                    "type": "string",
+                    "example": "SAVING"
+                },
+                "balance": {
+                    "type": "number",
+                    "example": 1000
+                },
+                "owner_name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "ACTIVE"
+                }
+            }
+        },
+        "dto.BaseResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "errors": {
+                    "type": "array",
+                    "items": {}
+                },
+                "message": {
+                    "type": "string"
+                },
+                "meta": {
+                    "$ref": "#/definitions/dto.Meta"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.CloseAccountResponse": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateAccountRequest": {
+            "type": "object",
+            "required": [
+                "account_type",
+                "citizen_id",
+                "owner_name",
+                "phone_number"
+            ],
+            "properties": {
+                "account_type": {
+                    "type": "string",
+                    "enum": [
+                        "SAVING",
+                        "CURRENT"
+                    ]
+                },
+                "citizen_id": {
+                    "type": "string"
+                },
+                "initial_balance": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "owner_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateExampleRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        },
+        "dto.ExampleDeleteResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ExampleResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
+                }
+            }
+        },
+        "dto.Meta": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.PatchExampleRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        },
+        "dto.TransactionRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "dto.TransactionResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "balance_after": {
+                    "type": "number"
+                },
+                "balance_before": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "transaction_ref": {
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateExampleRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        }
+    }
+}`
+
+// SwaggerInfo holds exported Swagger Info so clients can modify it
+var SwaggerInfo = &amp;swag.Spec{
+        Version:          "1.0",
+        Host:             "localhost:8080",
+        BasePath:         "/api/v1",
+        Schemes:          []string{},
+        Title:            "Go Gin Example API",
+        Description:      "CRUD API built with Go and Gin framework, connected to PostgreSQL.",
+        InfoInstanceName: "swagger",
+        SwaggerTemplate:  docTemplate,
+        LeftDelim:        "{{",
+        RightDelim:       "}}",
+}
+
+func init() <span class="cov0" title="0">{
+        swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package dto
+
+import "github.com/krizad/go-gin-api/internal/core/domain"
+
+// Request DTOs
+type CreateAccountRequest struct {
+        OwnerName      string  `json:"owner_name" binding:"required"`
+        CitizenID      string  `json:"citizen_id"  binding:"required,len=13,numeric"`
+        PhoneNumber    string  `json:"phone_number" binding:"required"`
+        AccountType    string  `json:"account_type" binding:"required,oneof=SAVING CURRENT"`
+        InitialBalance float64 `json:"initial_balance" binding:"gte=0"`
+}
+
+func ToCreateAccountRequest(accountReq *CreateAccountRequest) *domain.Account <span class="cov5" title="2">{
+        return &amp;domain.Account{
+                OwnerName:   accountReq.OwnerName,
+                CitizenID:   accountReq.CitizenID,
+                PhoneNumber: accountReq.PhoneNumber,
+                AccountType: accountReq.AccountType,
+                Balance:     accountReq.InitialBalance,
+        }
+
+}</span>
+
+// Response DTOs
+type AccountResponse struct {
+        AccountNumber string  `json:"account_number" `
+        OwnerName     string  `json:"owner_name" example:"John Doe"`
+        AccountType   string  `json:"account_type" example:"SAVING"`
+        Balance       float64 `json:"balance" example:"1000.00"`
+        Status        string  `json:"status" example:"ACTIVE"`
+}
+
+type AccountListResponse []AccountResponse
+
+type AccountDeleteResponse struct {
+        ID int64 `json:"id"`
+}
+
+// Mapper functions
+func ToAccountResponse(m *domain.Account) *AccountResponse <span class="cov10" title="4">{
+        return &amp;AccountResponse{
+                AccountNumber: m.AccountNumber,
+                OwnerName:     m.OwnerName,
+                AccountType:   m.AccountType,
+                Balance:       m.Balance,
+                Status:        m.Status,
+        }
+}</span>
+
+type CloseAccountResponse struct {
+        AccountNumber string `json:"account_number"`
+        Status        string `json:"status"`
+}
+
+func ToCloseAccountResponse(m *domain.Account) *CloseAccountResponse <span class="cov1" title="1">{
+        return &amp;CloseAccountResponse{
+                AccountNumber: m.AccountNumber,
+                Status:        m.Status,
+        }
+}</span>
+
+type AccountNumberURI struct {
+        AccountNumber string `uri:"account_number" binding:"required,len=10,numeric"`
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package dto
+
+import (
+        "time"
+
+        "github.com/krizad/go-gin-api/internal/core/domain"
+)
+
+type ExampleResponse struct {
+        ID        int64     `json:"id" example:"1"`
+        Name      string    `json:"name" example:"John Doe"`
+        Email     string    `json:"email" example:"john@example.com"`
+        CreatedAt time.Time `json:"created_at" example:"2024-01-01T00:00:00Z"`
+        UpdatedAt time.Time `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+}
+
+type ExampleListResponse []ExampleResponse
+
+type ExampleDeleteResponse struct {
+        ID int64 `json:"id"`
+}
+
+func ToExampleResponse(m *domain.Example) *ExampleResponse <span class="cov10" title="6">{
+        return &amp;ExampleResponse{
+                ID:        m.ID,
+                Name:      m.Name,
+                Email:     m.Email,
+                CreatedAt: m.CreatedAt,
+                UpdatedAt: m.UpdatedAt,
+        }
+}</span>
+
+func ToExampleListResponse(domain []domain.Example) ExampleListResponse <span class="cov1" title="1">{
+        list := make(ExampleListResponse, 0, len(domain))
+        for _, m := range domain </span><span class="cov1" title="1">{
+                list = append(list, *ToExampleResponse(&amp;m))
+        }</span>
+        <span class="cov1" title="1">return list</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package dto
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+)
+
+type Meta struct {
+        Page    int `json:"page,omitempty"`
+        PerPage int `json:"per_page,omitempty"`
+        Total   int `json:"total,omitempty"`
+}
+
+type BaseResponse struct {
+        Success bool   `json:"success"`
+        Message string `json:"message"`
+        Data    any    `json:"data,omitempty"`
+        Errors  []any  `json:"errors,omitempty"`
+        Meta    *Meta  `json:"meta,omitempty"`
+}
+
+func Success(c *gin.Context, status int, data any, message string) <span class="cov9" title="12">{
+        c.JSON(status, BaseResponse{
+                Success: true,
+                Message: message,
+                Data:    data,
+        })
+}</span>
+
+func Error(c *gin.Context, status int, message string, errors ...any) <span class="cov10" title="14">{
+        resp := BaseResponse{
+                Success: false,
+                Message: message,
+        }
+        if len(errors) &gt; 0 </span><span class="cov0" title="0">{
+                resp.Errors = errors
+        }</span>
+        <span class="cov10" title="14">c.AbortWithStatusJSON(status, resp)</span>
+}
+
+func OK(c *gin.Context, data any) <span class="cov8" title="10">{
+        Success(c, http.StatusOK, data, "OK")
+}</span>
+
+func Created(c *gin.Context, data any) <span class="cov3" title="2">{
+        Success(c, http.StatusCreated, data, "Created")
+}</span>
+
+func NoContent(c *gin.Context) <span class="cov0" title="0">{
+        c.Status(http.StatusNoContent)
+}</span>
+
+func WithMeta(c *gin.Context, status int, data any, message string, meta *Meta) <span class="cov3" title="2">{
+        c.JSON(status, BaseResponse{
+                Success: true,
+                Message: message,
+                Data:    data,
+                Meta:    meta,
+        })
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package dto
+
+import "github.com/krizad/go-gin-api/internal/core/domain"
+
+type TransactionRequest struct {
+        Amount      float64 `json:"amount" binding:"gt=0"`
+        Description string  `json:"description" binding:"max=255"`
+}
+
+type TransactionResponse struct {
+        TransactionRef string  `json:"transaction_ref"`
+        TrasactionType string  `json:"transaction_type"`
+        Amount         float64 `json:"amount"`
+        BalanceBefore  float64 `json:"balance_before"`
+        BalanceAfter   float64 `json:"balance_after"`
+        Description    string  `json:"description"`
+        CreatedAt      string  `json:"created_at"`
+}
+
+func ToTransactionResponse(m *domain.Transaction) *TransactionResponse <span class="cov10" title="4">{
+        return &amp;TransactionResponse{
+                TransactionRef: m.TransactionRef,
+                TrasactionType: m.TransactionType,
+                Amount:         m.Amount,
+                BalanceBefore:  m.BalanceBefore,
+                BalanceAfter:   m.BalanceAfter,
+                Description:    m.Description,
+                CreatedAt:      m.CreatedAt,
+        }
+}</span>
+
+func ToTransactionModel(a *domain.Account) *domain.Transaction <span class="cov0" title="0">{
+        return &amp;domain.Transaction{
+                AccountID:       a.ID,
+                TransactionRef:  "",
+                TransactionType: "DEPOSIT",
+                Amount:          a.Balance,
+                BalanceBefore:   0,
+                BalanceAfter:    a.Balance,
+                Description:     "Initial deposit",
+        }
+
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package handlers
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+        "github.com/krizad/go-gin-api/constants"
+        "github.com/krizad/go-gin-api/internal/adapters/http/dto"
+        "github.com/krizad/go-gin-api/internal/core/ports"
+)
+
+type AccountHandler struct {
+        service ports.AccountService
+}
+
+func NewAccountHandler(service ports.AccountService) *AccountHandler <span class="cov10" title="8">{
+        return &amp;AccountHandler{service: service}
+}</span>
+
+// CreateAccount godoc
+//
+//        @summary                Create a new account
+//        @description        Create a new bank account record. If initial_balance &gt; 0, creates a DEPOSIT transaction atomically.
+//        @tags                        accounts
+//        @accept                        json
+//        @produce                json
+//        @param                        request        body                dto.CreateAccountRequest        true        "Account payload"
+//        @success                201                {object}        dto.BaseResponse{data=dto.AccountResponse}        "Account created successfully"
+//        @failure                400                {object}        dto.BaseResponse        "Invalid input: citizen_id must be 13 digits, account_type must be SAVING or CURRENT, or balance cannot be negative"
+//        @failure                409                {object}        dto.BaseResponse        "Citizen ID already exists"
+//        @failure                500                {object}        dto.BaseResponse        "Failed to create account"
+//        @router                        /accounts [post]
+func (h *AccountHandler) CreateAccount(c *gin.Context) <span class="cov5" title="3">{
+        var req dto.CreateAccountRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov1" title="1">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov4" title="2">account := dto.ToCreateAccountRequest(&amp;req)
+
+        createdAccount, err := h.service.CreateAccount(c.Request.Context(), account)
+        if err != nil </span><span class="cov1" title="1">{
+                constants.HandleError(c, err)
+                return
+        }</span>
+
+        <span class="cov1" title="1">dto.Created(c, dto.ToAccountResponse(createdAccount))</span>
+}
+
+// GetAccountByNumber godoc
+//
+//        @summary                Get account by account number
+//        @description        Retrieve account details by 10-digit account number.
+//        @tags                        accounts
+//        @produce                json
+//        @param                        account_number        path                string        true        "Account Number (10 digits)"        example:"0000000001"
+//        @success                200                                {object}        dto.BaseResponse{data=dto.AccountResponse}        "Account found"
+//        @failure                400                                {object}        dto.BaseResponse        "Invalid account_number format"
+//        @failure                404                                {object}        dto.BaseResponse        "Account not found"
+//        @failure                500                                {object}        dto.BaseResponse        "Internal server error"
+//        @router                        /accounts/{account_number} [get]
+func (h *AccountHandler) GetAccountByNumber(c *gin.Context) <span class="cov4" title="2">{
+        var uri dto.AccountNumberURI
+        if err := c.ShouldBindUri(&amp;uri); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov4" title="2">account, err := h.service.GetAccountByNumber(c.Request.Context(), uri.AccountNumber)
+
+        if err != nil </span><span class="cov1" title="1">{
+                constants.HandleError(c, err)
+                return
+        }</span>
+
+        <span class="cov1" title="1">dto.OK(c, dto.ToAccountResponse(account))</span>
+}
+
+// GetAccountList godoc
+//
+//        @summary                List all accounts with pagination
+//        @description        Retrieve a paginated list of all accounts ordered by ID.
+//        @tags                        accounts
+//        @produce                json
+//        @param                        page        query                int                false        "Page number (default: 1, min: 1)"        default(1)
+//        @param                        limit        query                int                false        "Items per page (default: 10, max: 100)"        default(10)
+//        @success                200                {object}        dto.BaseResponse{data=[]dto.AccountResponse,meta=dto.Meta}        "List of accounts with pagination metadata"
+//        @failure                400                {object}        dto.BaseResponse        "Invalid page or limit parameters"
+//        @failure                500                {object}        dto.BaseResponse        "Failed to get account list"
+//        @router                        /accounts [get]
+func (h *AccountHandler) GetAccountList(c *gin.Context) <span class="cov1" title="1">{
+        // Parse query parameters with defaults
+        var query dto.Pagination
+        if err := c.ShouldBindQuery(&amp;query); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+
+        }</span>
+
+        // Call service
+        <span class="cov1" title="1">accounts, total, err := h.service.GetAccountList(c.Request.Context(), query.Page, query.Limit)
+        if err != nil </span><span class="cov0" title="0">{
+                constants.HandleError(c, err)
+                return
+        }</span>
+
+        // Convert to response DTOs
+        <span class="cov1" title="1">accountResponses := make([]dto.AccountResponse, 0, len(accounts))
+        for _, acc := range accounts </span><span class="cov4" title="2">{
+                accountResponses = append(accountResponses, *dto.ToAccountResponse(acc))
+        }</span>
+
+        // Return with pagination metadata
+        <span class="cov1" title="1">dto.WithMeta(c, http.StatusOK, accountResponses, "OK", &amp;dto.Meta{
+                Page:    query.Page,
+                PerPage: query.Limit,
+                Total:   total,
+        })</span>
+}
+
+// CloseAccount godoc
+//
+//        @summary                Close an account
+//        @description        Change account status from ACTIVE to CLOSED. Closed accounts cannot perform transactions (deposit/withdraw).
+//        @tags                        accounts
+//        @produce                json
+//        @param                        account_number        path                string        true        "Account Number (10 digits)"        example:"0000000001"
+//        @success                200                                {object}        dto.BaseResponse{data=dto.CloseAccountResponse}        "Account closed successfully"
+//        @failure                400                                {object}        dto.BaseResponse        "Invalid account number format"
+//        @failure                404                                {object}        dto.BaseResponse        "Account not found"
+//        @failure                409                                {object}        dto.BaseResponse        "Account is already closed"
+//        @failure                500                                {object}        dto.BaseResponse        "Failed to close account"
+//        @router                        /accounts/{account_number}/close [patch]
+func (h *AccountHandler) CloseAccountHandler(c *gin.Context) <span class="cov4" title="2">{
+
+        var uri dto.AccountNumberURI
+        if err := c.ShouldBindUri(&amp;uri); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+        <span class="cov4" title="2">account, err := h.service.CloseAccount(c.Request.Context(), uri.AccountNumber)
+        if err != nil </span><span class="cov1" title="1">{
+                constants.HandleError(c, err)
+                return
+        }</span>
+
+        <span class="cov1" title="1">dto.OK(c, dto.ToCloseAccountResponse(account))</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package handlers
+
+import (
+        "net/http"
+        "strconv"
+
+        "github.com/gin-gonic/gin"
+        "github.com/krizad/go-gin-api/db"
+        "github.com/krizad/go-gin-api/internal/adapters/http/dto"
+        "github.com/krizad/go-gin-api/internal/core/services"
+)
+
+type ExampleHandler struct {
+        service services.ExampleService
+}
+
+func NewExampleHandler(service services.ExampleService) *ExampleHandler <span class="cov10" title="13">{
+        return &amp;ExampleHandler{service: service}
+}</span>
+
+// ListExamples godoc
+//
+//        @summary                List all examples
+//        @description        Retrieve a list of all example records.
+//        @tags                        examples
+//        @produce                json
+//        @success                200        {object}        dto.BaseResponse{data=dto.ExampleListResponse}
+//        @failure                500        {object}        dto.BaseResponse
+//        @router                        /examples [get]
+func (h *ExampleHandler) ListExamples(c *gin.Context) <span class="cov1" title="1">{
+        examples, err := h.service.ListExamples(c.Request.Context())
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusInternalServerError, err.Error())
+                return
+        }</span>
+        <span class="cov1" title="1">dto.OK(c, dto.ToExampleListResponse(examples))</span>
+}
+
+// GetExample godoc
+//
+//        @summary                Get an example by ID
+//        @description        Retrieve a single example by its ID.
+//        @tags                        examples
+//        @produce                json
+//        @param                        id        path                int        true        "Example ID"
+//        @success                200        {object}        dto.BaseResponse{data=dto.ExampleResponse}
+//        @failure                400        {object}        dto.BaseResponse
+//        @failure                404        {object}        dto.BaseResponse
+//        @failure                500        {object}        dto.BaseResponse
+//        @router                        /examples/{id} [get]
+func (h *ExampleHandler) GetExample(c *gin.Context) <span class="cov4" title="3">{
+        id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+        if err != nil </span><span class="cov1" title="1">{
+                dto.Error(c, http.StatusBadRequest, "invalid id")
+                return
+        }</span>
+
+        <span class="cov3" title="2">example, err := h.service.GetExample(c.Request.Context(), id)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusInternalServerError, err.Error())
+                return
+        }</span>
+        <span class="cov3" title="2">if example == nil </span><span class="cov1" title="1">{
+                dto.Error(c, http.StatusNotFound, "example not found")
+                return
+        }</span>
+        <span class="cov1" title="1">dto.OK(c, dto.ToExampleResponse(example))</span>
+}
+
+// CreateExample godoc
+//
+//        @summary                Create a new example
+//        @description        Create a new example record.
+//        @tags                        examples
+//        @accept                        json
+//        @produce                json
+//        @param                        request        body                dto.CreateExampleRequest        true        "Example payload"
+//        @success                201                {object}        dto.BaseResponse{data=dto.ExampleResponse}
+//        @failure                400                {object}        dto.BaseResponse
+//        @failure                500                {object}        dto.BaseResponse
+//        @router                        /examples [post]
+func (h *ExampleHandler) CreateExample(c *gin.Context) <span class="cov3" title="2">{
+        var req dto.CreateExampleRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov1" title="1">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov1" title="1">example, err := h.service.CreateExample(c.Request.Context(), req)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusInternalServerError, err.Error())
+                return
+        }</span>
+        <span class="cov1" title="1">dto.Created(c, dto.ToExampleResponse(example))</span>
+}
+
+// UpdateExample godoc
+//
+//        @summary                Update an example
+//        @description        Fully replace an existing example by ID.
+//        @tags                        examples
+//        @accept                        json
+//        @produce                json
+//        @param                        id                path                int                                                        true        "Example ID"
+//        @param                        request        body                dto.UpdateExampleRequest        true        "Example payload"
+//        @success                200                {object}        dto.BaseResponse{data=dto.ExampleResponse}
+//        @failure                400                {object}        dto.BaseResponse
+//        @failure                404                {object}        dto.BaseResponse
+//        @failure                500                {object}        dto.BaseResponse
+//        @router                        /examples/{id} [put]
+func (h *ExampleHandler) UpdateExample(c *gin.Context) <span class="cov1" title="1">{
+        id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, "invalid id")
+                return
+        }</span>
+
+        <span class="cov1" title="1">var req dto.UpdateExampleRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov1" title="1">example, err := h.service.UpdateExample(c.Request.Context(), id, req)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusInternalServerError, err.Error())
+                return
+        }</span>
+        <span class="cov1" title="1">if example == nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusNotFound, "example not found")
+                return
+        }</span>
+        <span class="cov1" title="1">dto.OK(c, dto.ToExampleResponse(example))</span>
+}
+
+// PatchExample godoc
+//
+//        @summary                Partial update an example
+//        @description        Partially update fields of an existing example by ID.
+//        @tags                        examples
+//        @accept                        json
+//        @produce                json
+//        @param                        id                path                int                                                        true        "Example ID"
+//        @param                        request        body                dto.PatchExampleRequest        true        "Fields to patch"
+//        @success                200                {object}        dto.BaseResponse{data=dto.ExampleResponse}
+//        @failure                400                {object}        dto.BaseResponse
+//        @failure                404                {object}        dto.BaseResponse
+//        @failure                500                {object}        dto.BaseResponse
+//        @router                        /examples/{id} [patch]
+func (h *ExampleHandler) PatchExample(c *gin.Context) <span class="cov3" title="2">{
+        id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, "invalid id")
+                return
+        }</span>
+
+        <span class="cov3" title="2">var req dto.PatchExampleRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov3" title="2">if req.Name == nil &amp;&amp; req.Email == nil </span><span class="cov1" title="1">{
+                dto.Error(c, http.StatusBadRequest, "at least one field must be provided")
+                return
+        }</span>
+
+        <span class="cov1" title="1">example, err := h.service.PatchExample(c.Request.Context(), id, req)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusInternalServerError, err.Error())
+                return
+        }</span>
+        <span class="cov1" title="1">if example == nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusNotFound, "example not found")
+                return
+        }</span>
+        <span class="cov1" title="1">dto.OK(c, dto.ToExampleResponse(example))</span>
+}
+
+// DeleteExample godoc
+//
+//        @summary                Delete an example
+//        @description        Delete an example record by ID.
+//        @tags                        examples
+//        @produce                json
+//        @param                        id        path                int        true        "Example ID"
+//        @success                200        {object}        dto.BaseResponse{data=dto.ExampleDeleteResponse}
+//        @failure                400        {object}        dto.BaseResponse
+//        @failure                404        {object}        dto.BaseResponse
+//        @failure                500        {object}        dto.BaseResponse
+//        @router                        /examples/{id} [delete]
+func (h *ExampleHandler) DeleteExample(c *gin.Context) <span class="cov3" title="2">{
+        id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, "invalid id")
+                return
+        }</span>
+
+        <span class="cov3" title="2">deleted, err := h.service.DeleteExample(c.Request.Context(), id)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusInternalServerError, err.Error())
+                return
+        }</span>
+        <span class="cov3" title="2">if !deleted </span><span class="cov1" title="1">{
+                dto.Error(c, http.StatusNotFound, "example not found")
+                return
+        }</span>
+        <span class="cov1" title="1">dto.OK(c, dto.ExampleDeleteResponse{ID: id})</span>
+}
+
+// GetExampleByEmail godoc
+//
+//        @summary                Find example by email
+//        @description        Search for an example record by email query parameter.
+//        @tags                        examples
+//        @produce                json
+//        @param                        email        query                string        true        "Email address"
+//        @success                200                {object}        dto.BaseResponse{data=dto.ExampleResponse}
+//        @failure                400                {object}        dto.BaseResponse
+//        @failure                404                {object}        dto.BaseResponse
+//        @failure                500                {object}        dto.BaseResponse
+//        @router                        /examples/search [get]
+func (h *ExampleHandler) GetExampleByEmail(c *gin.Context) <span class="cov3" title="2">{
+        email := c.Query("email")
+        if email == "" </span><span class="cov1" title="1">{
+                dto.Error(c, http.StatusBadRequest, "email query parameter is required")
+                return
+        }</span>
+
+        <span class="cov1" title="1">example, err := h.service.GetExampleByEmail(c.Request.Context(), email)
+        if err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusInternalServerError, err.Error())
+                return
+        }</span>
+        <span class="cov1" title="1">if example == nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusNotFound, "example not found")
+                return
+        }</span>
+
+        <span class="cov1" title="1">dto.OK(c, dto.ToExampleResponse(example))</span>
+}
+
+// HealthCheck godoc
+//
+//        @summary                API health check
+//        @description        Returns the health status of the API and database connectivity.
+//        @tags                        health
+//        @produce                json
+//        @success                200        {object}        dto.BaseResponse
+//        @failure                503        {object}        dto.BaseResponse
+//        @router                        /health [get]
+func (h *ExampleHandler) HealthCheck(c *gin.Context) <span class="cov0" title="0">{
+        if err := db.DB.Ping(); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusServiceUnavailable, "health check failed", err.Error())
+                return
+        }</span>
+        <span class="cov0" title="0">dto.Success(c, http.StatusOK, gin.H{"status": "healthy"}, "OK")</span>
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package handlers
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+        "github.com/krizad/go-gin-api/constants"
+        "github.com/krizad/go-gin-api/internal/adapters/http/dto"
+        "github.com/krizad/go-gin-api/internal/core/ports"
+)
+
+type TransactionHandler struct {
+        service ports.TransactionService
+}
+
+func NewTransactionHandler(service ports.TransactionService) *TransactionHandler <span class="cov10" title="7">{
+        return &amp;TransactionHandler{service: service}
+}</span>
+
+// Deposit godoc
+//
+//        @summary                Deposit money into an account
+//        @description        Deposit a specified amount into the account. Creates a DEPOSIT transaction and updates account balance atomically.
+//        @tags                        transactions
+//        @accept                        json
+//        @produce                json
+//        @param                        account_number        path                string                                                true        "Account Number (10 digits)"        example:"0000000001"
+//        @param                        request                        body                dto.TransactionRequest                true        "Deposit request payload"
+//        @success                200                                {object}        dto.BaseResponse{data=dto.TransactionResponse}        "Deposit successful"
+//        @failure                400                                {object}        dto.BaseResponse        "Amount must be greater than 0"
+//        @failure                404                                {object}        dto.BaseResponse        "Account not found"
+//        @failure                409                                {object}        dto.BaseResponse        "Account is not active or already closed"
+//        @failure                500                                {object}        dto.BaseResponse        "Failed to update account balance"
+//        @router                        /accounts/{account_number}/deposit [post]
+func (t *TransactionHandler) Deposit(c *gin.Context) <span class="cov6" title="3">{
+        var uri dto.AccountNumberURI
+        if err := c.ShouldBindUri(&amp;uri); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+        <span class="cov6" title="3">var req dto.TransactionRequest
+
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov1" title="1">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov4" title="2">deposit, err := t.service.Deposit(c.Request.Context(), uri.AccountNumber, req.Amount, req.Description)
+        if err != nil </span><span class="cov1" title="1">{
+                constants.HandleError(c, err)
+                return
+        }</span>
+
+        <span class="cov1" title="1">dto.OK(c, dto.ToTransactionResponse(deposit))</span>
+}
+
+// Withdraw godoc
+//
+//        @summary                Withdraw money from an account
+//        @description        Withdraw a specified amount from the account. Validates sufficient balance, creates a WITHDRAW transaction, and updates account balance atomically.
+//        @tags                        transactions
+//        @accept                        json
+//        @produce                json
+//        @param                        account_number        path                string                                                true        "Account Number (10 digits)"        example:"0000000001"
+//        @param                        request                        body                dto.TransactionRequest                true        "Withdraw request payload"
+//        @success                200                                {object}        dto.BaseResponse{data=dto.TransactionResponse}        "Withdrawal successful"
+//        @failure                400                                {object}        dto.BaseResponse        "Insufficient balance or amount must be greater than 0"
+//        @failure                404                                {object}        dto.BaseResponse        "Account not found"
+//        @failure                409                                {object}        dto.BaseResponse        "Account is not active or already closed"
+//        @failure                500                                {object}        dto.BaseResponse        "Failed to update account balance"
+//        @router                        /accounts/{account_number}/withdraw [post]
+func (t *TransactionHandler) Withdraw(c *gin.Context) <span class="cov4" title="2">{
+        var uri dto.AccountNumberURI
+        if err := c.ShouldBindUri(&amp;uri); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+        <span class="cov4" title="2">var req dto.TransactionRequest
+
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov4" title="2">withdraw, err := t.service.Withdraw(c.Request.Context(), uri.AccountNumber, req.Amount, req.Description)
+        if err != nil </span><span class="cov1" title="1">{
+                constants.HandleError(c, err)
+                return
+        }</span>
+
+        <span class="cov1" title="1">dto.OK(c, dto.ToTransactionResponse(withdraw))</span>
+}
+
+// GetTransactionHistory godoc
+//
+//        @summary                Get transaction history of an account
+//        @description        Retrieve paginated transaction history for an account, ordered by newest first (created_at DESC).
+//        @tags                        transactions
+//        @produce                json
+//        @param                        account_number        path                string        true        "Account Number (10 digits)"        example:"0000000001"
+//        @param                        page                        query                int                false        "Page number (default: 1, min: 1)"        default(1)
+//        @param                        limit                        query                int                false        "Items per page (default: 10, max: 100)"        default(10)
+//        @success                200                                {object}        dto.BaseResponse{data=[]dto.TransactionResponse,meta=dto.Meta}        "Transaction history with pagination"
+//        @failure                400                                {object}        dto.BaseResponse        "Invalid account_number format or pagination parameters"
+//        @failure                404                                {object}        dto.BaseResponse        "Account not found"
+//        @failure                500                                {object}        dto.BaseResponse        "Failed to get transaction history"
+//        @router                        /accounts/{account_number}/transactions [get]
+func (t *TransactionHandler) GetTransactionHistory(c *gin.Context) <span class="cov4" title="2">{
+
+        var uri dto.AccountNumberURI
+        if err := c.ShouldBindUri(&amp;uri); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+        <span class="cov4" title="2">var query dto.Pagination
+        if err := c.ShouldBindQuery(&amp;query); err != nil </span><span class="cov0" title="0">{
+                dto.Error(c, http.StatusBadRequest, err.Error())
+                return
+
+        }</span>
+        <span class="cov4" title="2">transactions, total, err := t.service.GetTransactionHistory(c, uri.AccountNumber, query.Page, query.Limit)
+
+        if err != nil </span><span class="cov1" title="1">{
+                constants.HandleError(c, err)
+                return
+        }</span>
+        <span class="cov1" title="1">transactionResponses := make([]dto.TransactionResponse, 0, len(transactions))
+        for _, tx := range transactions </span><span class="cov4" title="2">{
+                transactionResponses = append(transactionResponses, *dto.ToTransactionResponse(tx))
+        }</span>
+        <span class="cov1" title="1">meta := &amp;dto.Meta{
+                Page:    query.Page,
+                PerPage: query.Limit,
+                Total:   total,
+        }
+
+        dto.WithMeta(c, http.StatusOK, transactionResponses, "OK", meta)</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package middleware
+
+import (
+        "log"
+        "time"
+
+        "github.com/gin-gonic/gin"
+)
+
+func Logger() gin.HandlerFunc <span class="cov0" title="0">{
+        return func(c *gin.Context) </span><span class="cov0" title="0">{
+                start := time.Now()
+                path := c.Request.URL.Path
+                method := c.Request.Method
+
+                c.Next()
+
+                latency := time.Since(start)
+                status := c.Writer.Status()
+                log.Printf("%s %s %d %v", method, path, status, latency)
+        }</span>
+}
+
+func CORS() gin.HandlerFunc <span class="cov0" title="0">{
+        return func(c *gin.Context) </span><span class="cov0" title="0">{
+                c.Header("Access-Control-Allow-Origin", "*")
+                c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS")
+                c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+                if c.Request.Method == "OPTIONS" </span><span class="cov0" title="0">{
+                        c.AbortWithStatus(204)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">c.Next()</span>
+        }
+}
+
+func Recovery() gin.HandlerFunc <span class="cov0" title="0">{
+        return func(c *gin.Context) </span><span class="cov0" title="0">{
+                defer func() </span><span class="cov0" title="0">{
+                        if err := recover(); err != nil </span><span class="cov0" title="0">{
+                                log.Printf("panic recovered: %v", err)
+                                c.AbortWithStatusJSON(500, gin.H{"error": "internal server error"})
+                        }</span>
+                }()
+                <span class="cov0" title="0">c.Next()</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package routes
+
+import (
+        "github.com/gin-gonic/gin"
+        "github.com/krizad/go-gin-api/internal/adapters/http/handlers"
+        swaggerFiles "github.com/swaggo/files"
+        ginSwagger "github.com/swaggo/gin-swagger"
+)
+
+func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandler, th *handlers.TransactionHandler) <span class="cov0" title="0">{
+        r.GET("/", func(c *gin.Context) </span><span class="cov0" title="0">{
+                c.Redirect(302, "/swagger/index.html")
+        }</span>)
+
+        <span class="cov0" title="0">r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+        api := r.Group("/api/v1")
+        </span><span class="cov0" title="0">{
+                examples := api.Group("/examples")
+                </span><span class="cov0" title="0">{
+                        examples.GET("", eh.ListExamples)
+                        examples.POST("", eh.CreateExample)
+
+                        examples.GET("/search", eh.GetExampleByEmail)
+
+                        examples.GET("/:id", eh.GetExample)
+                        examples.PUT("/:id", eh.UpdateExample)
+                        examples.PATCH("/:id", eh.PatchExample)
+                        examples.DELETE("/:id", eh.DeleteExample)
+                }</span>
+
+                <span class="cov0" title="0">accounts := api.Group("/accounts")
+                </span><span class="cov0" title="0">{
+                        accounts.GET("", ah.GetAccountList)
+                        accounts.POST("", ah.CreateAccount)
+                        accounts.GET("/:account_number", ah.GetAccountByNumber)
+                        accounts.POST("/:account_number/deposit", th.Deposit)
+                        accounts.POST("/:account_number/withdraw", th.Withdraw)
+                        accounts.GET("/:account_number/transactions", th.GetTransactionHistory)
+
+                        accounts.PATCH("/:account_number/close", ah.CloseAccountHandler)
+                }</span>
+        }
+
+        <span class="cov0" title="0">r.GET("/health", eh.HealthCheck)</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package repositories
+
+import (
+        "context"
+        "database/sql"
+        "fmt"
+        "time"
+
+        "github.com/krizad/go-gin-api/internal/core/domain"
+        "github.com/krizad/go-gin-api/internal/core/ports"
+)
+
+type AccountRepo struct {
+        db *sql.DB
+}
+
+func NewAccountRepository(db *sql.DB) ports.AccountRepository <span class="cov0" title="0">{
+        return &amp;AccountRepo{db: db}
+}</span>
+
+type querier interface {
+        QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
+}
+
+func (r *AccountRepo) GenerateAccountNumber(ctx context.Context, tx *sql.Tx) (string, error) <span class="cov0" title="0">{
+        var next int64
+
+        err := tx.QueryRowContext(
+                ctx,
+                `SELECT nextval('account_number_seq')`,
+        ).Scan(&amp;next)
+
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+
+        <span class="cov0" title="0">return fmt.Sprintf("%010d", next), nil</span>
+}
+
+func (r *AccountRepo) BeginTx(ctx context.Context) (*sql.Tx, error) <span class="cov0" title="0">{
+        return r.db.BeginTx(ctx, nil)
+}</span>
+
+func (r *AccountRepo) CheckCitizenIDExists(ctx context.Context, citizenID string) (bool, error) <span class="cov0" title="0">{
+        var count int
+        err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM accounts WHERE citizen_id = $1`, citizenID).Scan(&amp;count)
+        if err != nil </span><span class="cov0" title="0">{
+                return false, err
+        }</span>
+        <span class="cov0" title="0">return count &gt; 0, nil</span>
+}
+
+// func (r *AccountRepo) Create(ctx context.Context, account *domain.Account) (*domain.Account, error) {
+//         ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+//         defer cancel()
+//         return r.createWithQuerier(ctx, r.db, account)
+// }
+
+func (r *AccountRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, account *domain.Account) (*domain.Account, error) <span class="cov0" title="0">{
+        fmt.Println("account number ====== ", account.AccountNumber)
+        err := tx.QueryRowContext(ctx, `
+                INSERT INTO accounts (owner_name, citizen_id, phone_number, account_type, balance, account_number, status)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                RETURNING id, created_at, updated_at`,
+                account.OwnerName,
+                account.CitizenID,
+                account.PhoneNumber,
+                account.AccountType,
+                account.Balance,
+                account.AccountNumber,
+                account.Status,
+        ).Scan(&amp;account.ID, &amp;account.CreatedAt, &amp;account.UpdatedAt)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("create account: %w", err)
+        }</span>
+        <span class="cov0" title="0">return account, nil</span>
+}
+
+// func (r *AccountRepo) createWithQuerier(ctx context.Context, q querier, account *domain.Account) (*domain.Account, error) {
+//         var err error
+//         account.AccountNumber, err = generateAccountNumber(ctx, q)
+//         if err != nil {
+//                 return nil, fmt.Errorf("generate account number: %w", err)
+//         }
+
+//         err = q.QueryRowContext(ctx, `
+//                 INSERT INTO accounts (owner_name, citizen_id, phone_number, account_type, balance, account_number, status)
+//                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+//                 RETURNING id, created_at, updated_at`,
+//                 account.OwnerName,
+//                 account.CitizenID,
+//                 account.PhoneNumber,
+//                 account.AccountType,
+//                 account.Balance,
+//                 account.AccountNumber,
+//                 account.Status,
+//         ).Scan(&amp;account.ID, &amp;account.CreatedAt, &amp;account.UpdatedAt)
+//         if err != nil {
+//                 return nil, fmt.Errorf("create account: %w", err)
+//         }
+//         return account, nil
+// }
+
+func (r *AccountRepo) GetByAccountNumber(ctx context.Context, accountNumber string) (*domain.Account, error) <span class="cov0" title="0">{
+        ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+        defer cancel()
+        return r.getByAccountNumber(ctx, r.db, accountNumber, false)
+}</span>
+
+func (r *AccountRepo) GetByAccountNumberWithLock(ctx context.Context, tx *sql.Tx, accountNumber string) (*domain.Account, error) <span class="cov0" title="0">{
+        ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+        defer cancel()
+        return r.getByAccountNumber(ctx, tx, accountNumber, true)
+}</span>
+
+func (r *AccountRepo) getByAccountNumber(ctx context.Context, q querier, accountNumber string, lock bool) (*domain.Account, error) <span class="cov0" title="0">{
+        query := `SELECT id, account_number, owner_name, citizen_id, phone_number, account_type, balance, status, created_at, updated_at
+                FROM accounts
+                WHERE account_number = $1`
+        if lock </span><span class="cov0" title="0">{
+                query += " FOR UPDATE"
+        }</span>
+
+        <span class="cov0" title="0">account := &amp;domain.Account{}
+        err := q.QueryRowContext(ctx, query, accountNumber).Scan(
+                &amp;account.ID,
+                &amp;account.AccountNumber,
+                &amp;account.OwnerName,
+                &amp;account.CitizenID,
+                &amp;account.PhoneNumber,
+                &amp;account.AccountType,
+                &amp;account.Balance,
+                &amp;account.Status,
+                &amp;account.CreatedAt,
+                &amp;account.UpdatedAt,
+        )
+        if err != nil </span><span class="cov0" title="0">{
+                if err == sql.ErrNoRows </span><span class="cov0" title="0">{
+                        return nil, nil
+                }</span>
+                <span class="cov0" title="0">return nil, fmt.Errorf("get account by number: %w", err)</span>
+        }
+
+        <span class="cov0" title="0">return account, nil</span>
+}
+func (r *AccountRepo) GetByAccountList(ctx context.Context, limit int, offset int) ([]*domain.Account, int, error) <span class="cov0" title="0">{
+        ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+        defer cancel()
+        var total int
+
+        err := r.db.QueryRowContext(ctx, `
+                SELECT COUNT(*) FROM accounts
+        `).Scan(&amp;total)
+
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, 0, err
+        }</span>
+
+        <span class="cov0" title="0">accountList := []*domain.Account{}
+        query := `SELECT account_number,owner_name,account_type,balance,status FROM accounts ORDER BY account_number LIMIT $1 OFFSET $2`
+        rows, err := r.db.QueryContext(ctx, query, limit, offset)
+
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, 0, err
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        for rows.Next() </span><span class="cov0" title="0">{
+                account := &amp;domain.Account{}
+
+                err := rows.Scan(&amp;account.AccountNumber, &amp;account.OwnerName, &amp;account.AccountType, &amp;account.Balance, &amp;account.Status)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, 0, err
+                }</span>
+                <span class="cov0" title="0">accountList = append(accountList, account)</span>
+        }
+
+        <span class="cov0" title="0">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
+                return nil, 0, err
+        }</span>
+
+        <span class="cov0" title="0">return accountList, total, nil</span>
+}
+
+func (r *AccountRepo) UpdateBalanceWithTx(ctx context.Context, tx *sql.Tx, accountID int64, newBalance float64) error <span class="cov0" title="0">{
+        query := `UPDATE accounts SET balance = $1, updated_at = NOW() WHERE id = $2`
+        _, err := tx.ExecContext(ctx, query, newBalance, accountID)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("update balance: %w", err)
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+// GetByAccountNumberWithLock ดึงข้อมูล account พร้อม lock row (FOR UPDATE)
+
+func (r *AccountRepo) UpdateStatus(ctx context.Context, tx *sql.Tx, accountNumber string, status string) error <span class="cov0" title="0">{
+        ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+        defer cancel()
+        // Update status
+        query := `UPDATE accounts SET status = $1, updated_at = NOW() WHERE account_number = $2`
+        result, err := tx.ExecContext(ctx, query, status, accountNumber)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("update status: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">affected, err := result.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("rows affected: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">if affected == 0 </span><span class="cov0" title="0">{
+                return sql.ErrNoRows
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package repositories
+
+import (
+        "context"
+        "database/sql"
+        "fmt"
+
+        "github.com/krizad/go-gin-api/internal/core/domain"
+)
+
+type ExampleRepository interface {
+        Create(ctx context.Context, name, email string) (*domain.Example, error)
+        GetByID(ctx context.Context, id int64) (*domain.Example, error)
+        GetByEmail(ctx context.Context, email string) (*domain.Example, error)
+        List(ctx context.Context) ([]domain.Example, error)
+        Update(ctx context.Context, id int64, name, email string) (*domain.Example, error)
+        Delete(ctx context.Context, id int64) (bool, error)
+        Count(ctx context.Context) (int, error)
+}
+
+type exampleRepo struct {
+        db *sql.DB
+}
+
+func NewExampleRepository(db *sql.DB) ExampleRepository <span class="cov0" title="0">{
+        return &amp;exampleRepo{db: db}
+}</span>
+
+func (r *exampleRepo) Create(ctx context.Context, name, email string) (*domain.Example, error) <span class="cov0" title="0">{
+        example := &amp;domain.Example{}
+        err := r.db.QueryRowContext(ctx,
+                `INSERT INTO examples (name, email) VALUES ($1, $2) RETURNING id, name, email, created_at, updated_at`,
+                name, email,
+        ).Scan(&amp;example.ID, &amp;example.Name, &amp;example.Email, &amp;example.CreatedAt, &amp;example.UpdatedAt)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("create example: %w", err)
+        }</span>
+        <span class="cov0" title="0">return example, nil</span>
+}
+
+func (r *exampleRepo) GetByID(ctx context.Context, id int64) (*domain.Example, error) <span class="cov0" title="0">{
+        example := &amp;domain.Example{}
+        err := r.db.QueryRowContext(ctx,
+                `SELECT id, name, email, created_at, updated_at FROM examples WHERE id = $1`, id,
+        ).Scan(&amp;example.ID, &amp;example.Name, &amp;example.Email, &amp;example.CreatedAt, &amp;example.UpdatedAt)
+        if err == sql.ErrNoRows </span><span class="cov0" title="0">{
+                return nil, nil
+        }</span>
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("get example: %w", err)
+        }</span>
+        <span class="cov0" title="0">return example, nil</span>
+}
+
+func (r *exampleRepo) GetByEmail(ctx context.Context, email string) (*domain.Example, error) <span class="cov0" title="0">{
+        example := &amp;domain.Example{}
+        err := r.db.QueryRowContext(ctx,
+                `SELECT id, name, email, created_at, updated_at FROM examples WHERE email = $1`, email,
+        ).Scan(&amp;example.ID, &amp;example.Name, &amp;example.Email, &amp;example.CreatedAt, &amp;example.UpdatedAt)
+        if err == sql.ErrNoRows </span><span class="cov0" title="0">{
+                return nil, nil
+        }</span>
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("get example by email: %w", err)
+        }</span>
+        <span class="cov0" title="0">return example, nil</span>
+}
+
+func (r *exampleRepo) List(ctx context.Context) ([]domain.Example, error) <span class="cov0" title="0">{
+        rows, err := r.db.QueryContext(ctx,
+                `SELECT id, name, email, created_at, updated_at FROM examples ORDER BY id`,
+        )
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("list examples: %w", err)
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        var examples []domain.Example
+        for rows.Next() </span><span class="cov0" title="0">{
+                var e domain.Example
+                if err := rows.Scan(&amp;e.ID, &amp;e.Name, &amp;e.Email, &amp;e.CreatedAt, &amp;e.UpdatedAt); err != nil </span><span class="cov0" title="0">{
+                        return nil, fmt.Errorf("scan example: %w", err)
+                }</span>
+                <span class="cov0" title="0">examples = append(examples, e)</span>
+        }
+        <span class="cov0" title="0">if examples == nil </span><span class="cov0" title="0">{
+                examples = []domain.Example{}
+        }</span>
+        <span class="cov0" title="0">return examples, rows.Err()</span>
+}
+
+func (r *exampleRepo) Update(ctx context.Context, id int64, name, email string) (*domain.Example, error) <span class="cov0" title="0">{
+        example := &amp;domain.Example{}
+        err := r.db.QueryRowContext(ctx,
+                `UPDATE examples SET name = $1, email = $2, updated_at = NOW() WHERE id = $3 RETURNING id, name, email, created_at, updated_at`,
+                name, email, id,
+        ).Scan(&amp;example.ID, &amp;example.Name, &amp;example.Email, &amp;example.CreatedAt, &amp;example.UpdatedAt)
+        if err == sql.ErrNoRows </span><span class="cov0" title="0">{
+                return nil, nil
+        }</span>
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("update example: %w", err)
+        }</span>
+        <span class="cov0" title="0">return example, nil</span>
+}
+
+func (r *exampleRepo) Delete(ctx context.Context, id int64) (bool, error) <span class="cov0" title="0">{
+        result, err := r.db.ExecContext(ctx, `DELETE FROM examples WHERE id = $1`, id)
+        if err != nil </span><span class="cov0" title="0">{
+                return false, fmt.Errorf("delete example: %w", err)
+        }</span>
+        <span class="cov0" title="0">affected, err := result.RowsAffected()
+        if err != nil </span><span class="cov0" title="0">{
+                return false, fmt.Errorf("rows affected: %w", err)
+        }</span>
+        <span class="cov0" title="0">return affected &gt; 0, nil</span>
+}
+
+func (r *exampleRepo) Count(ctx context.Context) (int, error) <span class="cov0" title="0">{
+        var count int
+        err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM examples`).Scan(&amp;count)
+        return count, err
+}</span>
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package repositories
+
+import (
+        "context"
+        "database/sql"
+        "fmt"
+        "time"
+
+        "github.com/krizad/go-gin-api/internal/core/domain"
+        "github.com/krizad/go-gin-api/internal/core/ports"
+)
+
+type TransactionRepo struct {
+        db *sql.DB
+}
+
+func NewTransactionRepository(db *sql.DB) ports.TransactionRepository <span class="cov0" title="0">{
+        return &amp;TransactionRepo{db: db}
+}</span>
+
+func (r *TransactionRepo) GenerateTransactionRef(ctx context.Context, tx *sql.Tx) (string, error) <span class="cov0" title="0">{
+        now := time.Now()
+        dateStr := now.Format("20060102")
+
+        var count int
+        query := `SELECT COUNT(*) FROM transactions WHERE transaction_ref LIKE $1`
+        pattern := fmt.Sprintf("TXN%s%%", dateStr)
+
+        var err error
+        if tx != nil </span><span class="cov0" title="0">{
+                err = tx.QueryRowContext(ctx, query, pattern).Scan(&amp;count)
+        }</span> else<span class="cov0" title="0"> {
+                err = r.db.QueryRowContext(ctx, query, pattern).Scan(&amp;count)
+        }</span>
+
+        <span class="cov0" title="0">if err != nil &amp;&amp; err != sql.ErrNoRows </span><span class="cov0" title="0">{
+                return "", fmt.Errorf("failed to count transactions: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">runningNumber := count + 1
+        transactionRef := fmt.Sprintf("TXN%s%04d", dateStr, runningNumber)
+        return transactionRef, nil</span>
+}
+
+func (r *TransactionRepo) CreateWithTx(ctx context.Context, tx *sql.Tx, transaction *domain.Transaction) (*domain.Transaction, error) <span class="cov0" title="0">{
+        query := `INSERT INTO transactions (account_id, transaction_ref, transaction_type, amount, balance_before, balance_after, description)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id, transaction_ref , created_at`
+        TransactionRef, err := r.GenerateTransactionRef(ctx, tx)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">err = tx.QueryRowContext(ctx, query,
+                transaction.AccountID,
+                TransactionRef,
+                transaction.TransactionType,
+                transaction.Amount,
+                transaction.BalanceBefore,
+                transaction.BalanceAfter,
+                transaction.Description,
+        ).Scan(&amp;transaction.ID, &amp;transaction.TransactionRef, &amp;transaction.CreatedAt)
+
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("create transaction: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return transaction, nil</span>
+}
+
+// GetByAccountID ดึงประวัติธุรกรรมของบัญชี เรียงจากใหม่ไปเก่า
+func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64, limit int, offset int) ([]*domain.Transaction, int, error) <span class="cov0" title="0">{
+        // Get total count
+        var total int
+        err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM transactions WHERE account_id = $1`, accountID).Scan(&amp;total)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, 0, fmt.Errorf("count transactions: %w", err)
+        }</span>
+
+        // Get transactions - เรียงจากใหม่ไปเก่า (ORDER BY created_at DESC)
+        <span class="cov0" title="0">query := `SELECT id, account_id, transaction_ref, transaction_type, amount, balance_before, balance_after, description, created_at
+                FROM transactions
+                WHERE account_id = $1
+                ORDER BY id DESC
+                LIMIT $2 OFFSET $3`
+
+        rows, err := r.db.QueryContext(ctx, query, accountID, limit, offset)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, 0, fmt.Errorf("query transactions: %w", err)
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        transactions := []*domain.Transaction{}
+        for rows.Next() </span><span class="cov0" title="0">{
+                tx := &amp;domain.Transaction{}
+                err := rows.Scan(
+                        &amp;tx.ID,
+                        &amp;tx.AccountID,
+                        &amp;tx.TransactionRef,
+                        &amp;tx.TransactionType,
+                        &amp;tx.Amount,
+                        &amp;tx.BalanceBefore,
+                        &amp;tx.BalanceAfter,
+                        &amp;tx.Description,
+                        &amp;tx.CreatedAt,
+                )
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, 0, fmt.Errorf("scan transaction: %w", err)
+                }</span>
+                <span class="cov0" title="0">transactions = append(transactions, tx)</span>
+        }
+
+        <span class="cov0" title="0">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
+                return nil, 0, fmt.Errorf("rows error: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return transactions, total, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package services
+
+import (
+        "context"
+        "fmt"
+
+        "github.com/krizad/go-gin-api/constants"
+        "github.com/krizad/go-gin-api/internal/core/domain"
+        "github.com/krizad/go-gin-api/internal/core/ports"
+)
+
+type accountService struct {
+        repo            ports.AccountRepository
+        transactionRepo ports.TransactionRepository
+}
+
+func NewAccountService(repo ports.AccountRepository, transactionRepo ports.TransactionRepository) ports.AccountService <span class="cov10" title="8">{
+        return &amp;accountService{
+                repo:            repo,
+                transactionRepo: transactionRepo,
+        }
+}</span>
+
+func (s *accountService) CreateAccount(ctx context.Context, account *domain.Account) (*domain.Account, error) <span class="cov4" title="2">{
+        exist, err := s.repo.CheckCitizenIDExists(ctx, account.CitizenID)
+        if err != nil </span><span class="cov1" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov1" title="1">if exist </span><span class="cov1" title="1">{
+                return nil, constants.ErrCitizenIDExists
+        }</span>
+
+        <span class="cov0" title="0">tx, err := s.repo.BeginTx(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to begin transaction: %w", err)
+        }</span>
+        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov0" title="0">{
+                        tx.Rollback()
+                }</span>
+        }()
+
+        <span class="cov0" title="0">account.Status = "ACTIVE"
+
+        account.AccountNumber, err = s.repo.GenerateAccountNumber(ctx, tx)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">createdAccount, err := s.repo.CreateWithTx(ctx, tx, account)
+        // createdAccount.AccountNumber = s.repo.
+
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">if createdAccount.Balance &gt; 0 </span><span class="cov0" title="0">{
+                _, err = s.transactionRepo.CreateWithTx(ctx, tx, &amp;domain.Transaction{
+                        AccountID:       createdAccount.ID,
+                        TransactionType: "DEPOSIT",
+                        Amount:          createdAccount.Balance,
+                        BalanceBefore:   0,
+                        BalanceAfter:    createdAccount.Balance,
+                        Description:     "Initial deposit",
+                })
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, fmt.Errorf("failed to create deposit transaction: %w", err)
+                }</span>
+        }
+
+        <span class="cov0" title="0">if err = tx.Commit(); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to commit transaction: %w", err)
+        }</span>
+        <span class="cov0" title="0">return createdAccount, nil</span>
+}
+
+func (s *accountService) GetAccountByNumber(ctx context.Context, accountNumber string) (*domain.Account, error) <span class="cov5" title="3">{
+        account, err := s.repo.GetByAccountNumber(ctx, accountNumber)
+        if err != nil </span><span class="cov1" title="1">{
+                return nil, constants.ErrInternal
+        }</span>
+
+        <span class="cov4" title="2">if account == nil </span><span class="cov1" title="1">{
+                return nil, constants.ErrAccountNotFound
+        }</span>
+
+        <span class="cov1" title="1">return account, nil</span>
+}
+
+func (s *accountService) GetAccountList(ctx context.Context, page int, limit int) ([]*domain.Account, int, error) <span class="cov4" title="2">{
+        offset := (page - 1) * limit
+        accountList, total, err := s.repo.GetByAccountList(ctx, limit, offset)
+        if err != nil </span><span class="cov1" title="1">{
+                return nil, 0, constants.ErrOperationFailed
+        }</span>
+
+        <span class="cov1" title="1">return accountList, total, nil</span>
+
+}
+
+func (s *accountService) CloseAccount(ctx context.Context, accountNumber string) (*domain.Account, error) <span class="cov1" title="1">{
+
+        tx, err := s.repo.BeginTx(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to begin transaction: %w", err)
+        }</span>
+        <span class="cov1" title="1">defer func() </span><span class="cov1" title="1">{
+                if err != nil </span><span class="cov0" title="0">{
+                        tx.Rollback()
+                }</span>
+        }()
+        <span class="cov1" title="1">account, err := s.repo.GetByAccountNumberWithLock(ctx, tx, accountNumber)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, constants.ErrInternal
+        }</span>
+
+        <span class="cov1" title="1">if account == nil </span><span class="cov1" title="1">{
+                return nil, constants.ErrAccountNotFound
+        }</span>
+
+        <span class="cov0" title="0">if account.Status == "CLOSED" </span><span class="cov0" title="0">{
+                return nil, constants.ErrAccountAlreadyClosed
+        }</span>
+
+        <span class="cov0" title="0">err = s.repo.UpdateStatus(ctx, tx, accountNumber, "CLOSED")
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, constants.ErrOperationFailed
+        }</span>
+        <span class="cov0" title="0">if err = tx.Commit(); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to commit transaction: %w", err)
+        }</span>
+        <span class="cov0" title="0">account, err = s.repo.GetByAccountNumber(ctx, accountNumber)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, constants.ErrInternal
+        }</span>
+
+        <span class="cov0" title="0">return account, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">package services
+
+import (
+        "context"
+
+        "github.com/krizad/go-gin-api/internal/adapters/http/dto"
+        "github.com/krizad/go-gin-api/internal/adapters/repositories"
+        "github.com/krizad/go-gin-api/internal/core/domain"
+)
+
+type ExampleService interface {
+        CreateExample(ctx context.Context, req dto.CreateExampleRequest) (*domain.Example, error)
+        GetExample(ctx context.Context, id int64) (*domain.Example, error)
+        GetExampleByEmail(ctx context.Context, email string) (*domain.Example, error)
+        ListExamples(ctx context.Context) ([]domain.Example, error)
+        UpdateExample(ctx context.Context, id int64, req dto.UpdateExampleRequest) (*domain.Example, error)
+        PatchExample(ctx context.Context, id int64, req dto.PatchExampleRequest) (*domain.Example, error)
+        DeleteExample(ctx context.Context, id int64) (bool, error)
+}
+
+type exampleService struct {
+        repo repositories.ExampleRepository
+}
+
+func NewExampleService(repo repositories.ExampleRepository) ExampleService <span class="cov10" title="12">{
+        return &amp;exampleService{repo: repo}
+}</span>
+
+func (s *exampleService) CreateExample(ctx context.Context, req dto.CreateExampleRequest) (*domain.Example, error) <span class="cov3" title="2">{
+        return s.repo.Create(ctx, req.Name, req.Email)
+}</span>
+
+func (s *exampleService) GetExample(ctx context.Context, id int64) (*domain.Example, error) <span class="cov3" title="2">{
+        return s.repo.GetByID(ctx, id)
+}</span>
+
+func (s *exampleService) GetExampleByEmail(ctx context.Context, email string) (*domain.Example, error) <span class="cov1" title="1">{
+        return s.repo.GetByEmail(ctx, email)
+}</span>
+
+func (s *exampleService) ListExamples(ctx context.Context) ([]domain.Example, error) <span class="cov1" title="1">{
+        return s.repo.List(ctx)
+}</span>
+
+func (s *exampleService) UpdateExample(ctx context.Context, id int64, req dto.UpdateExampleRequest) (*domain.Example, error) <span class="cov1" title="1">{
+        return s.repo.Update(ctx, id, req.Name, req.Email)
+}</span>
+
+func (s *exampleService) PatchExample(ctx context.Context, id int64, req dto.PatchExampleRequest) (*domain.Example, error) <span class="cov4" title="3">{
+        existing, err := s.repo.GetByID(ctx, id)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov4" title="3">if existing == nil </span><span class="cov1" title="1">{
+                return nil, nil // not found
+        }</span>
+
+        <span class="cov3" title="2">if req.Name != nil </span><span class="cov1" title="1">{
+                existing.Name = *req.Name
+        }</span>
+        <span class="cov3" title="2">if req.Email != nil </span><span class="cov1" title="1">{
+                existing.Email = *req.Email
+        }</span>
+
+        <span class="cov3" title="2">return s.repo.Update(ctx, id, existing.Name, existing.Email)</span>
+}
+
+func (s *exampleService) DeleteExample(ctx context.Context, id int64) (bool, error) <span class="cov3" title="2">{
+        return s.repo.Delete(ctx, id)
+}</span>
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package services
+
+import (
+        "context"
+        "fmt"
+
+        "github.com/krizad/go-gin-api/constants"
+        "github.com/krizad/go-gin-api/internal/core/domain"
+        "github.com/krizad/go-gin-api/internal/core/ports"
+)
+
+type transactionService struct {
+        accountRepo     ports.AccountRepository
+        transactionRepo ports.TransactionRepository
+}
+
+func NewTransactionService(accountRepo ports.AccountRepository, transactionRepo ports.TransactionRepository) ports.TransactionService <span class="cov10" title="6">{
+        return &amp;transactionService{
+                accountRepo:     accountRepo,
+                transactionRepo: transactionRepo,
+        }
+}</span>
+func (s *transactionService) Deposit(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error) <span class="cov4" title="2">{
+        return s.processTransaction(ctx, accountNumber, amount, "DEPOSIT", description)
+}</span>
+
+func (s *transactionService) Withdraw(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error) <span class="cov1" title="1">{
+        return s.processTransaction(ctx, accountNumber, -amount, "WITHDRAW", description)
+}</span>
+
+func (s *transactionService) processTransaction(ctx context.Context, accountNumber string, amount float64, txType string, description string) (*domain.Transaction, error) <span class="cov6" title="3">{
+        tx, err := s.accountRepo.BeginTx(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to begin transaction: %w", err)
+        }</span>
+        <span class="cov6" title="3">defer func() </span><span class="cov6" title="3">{
+                if err != nil </span><span class="cov0" title="0">{
+                        tx.Rollback()
+                }</span>
+        }()
+
+        <span class="cov6" title="3">account, err := s.accountRepo.GetByAccountNumberWithLock(ctx, tx, accountNumber)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to get account: %w", err)
+        }</span>
+        <span class="cov6" title="3">if account == nil </span><span class="cov4" title="2">{
+                return nil, constants.ErrAccountNotFound
+        }</span>
+        <span class="cov1" title="1">if account.Status != "ACTIVE" </span><span class="cov1" title="1">{
+                return nil, constants.ErrAccountNotActive
+        }</span>
+
+        <span class="cov0" title="0">balanceBefore := account.Balance
+        balanceAfter := balanceBefore + amount // amount เป็น negative สำหรับ WITHDRAW
+
+        if balanceAfter &lt; 0 </span><span class="cov0" title="0">{
+                return nil, constants.ErrInsufficientBalance
+        }</span>
+
+        <span class="cov0" title="0">if err = s.accountRepo.UpdateBalanceWithTx(ctx, tx, account.ID, balanceAfter); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to update account balance: %w", err)
+        }</span>
+        <span class="cov0" title="0">if txType == "WITHDRAW" </span><span class="cov0" title="0">{
+                amount = -amount
+        }</span>
+        <span class="cov0" title="0">createdTx, err := s.transactionRepo.CreateWithTx(ctx, tx, &amp;domain.Transaction{
+                AccountID:       account.ID,
+                TransactionType: txType,
+                Amount:          amount,
+                BalanceBefore:   balanceBefore,
+                BalanceAfter:    balanceAfter,
+                Description:     description,
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to create transaction: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">if err = tx.Commit(); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to commit transaction: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return createdTx, nil</span>
+}
+
+// GetTransactionHistory ดึงประวัติธุรกรรมของบัญชี
+func (s *transactionService) GetTransactionHistory(ctx context.Context, accountNumber string, page int, limit int) ([]*domain.Transaction, int, error) <span class="cov6" title="3">{
+
+        account, err := s.accountRepo.GetByAccountNumber(ctx, accountNumber)
+        if err != nil </span><span class="cov1" title="1">{
+                return nil, 0, constants.ErrOperationFailed
+        }</span>
+        <span class="cov4" title="2">if account == nil </span><span class="cov1" title="1">{
+                return nil, 0, constants.ErrAccountNotFound
+        }</span>
+        <span class="cov1" title="1">offset := (page - 1) * limit
+        transactions, total, err := s.transactionRepo.GetTxByAccountID(ctx, account.ID, limit, offset)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, 0, constants.ErrOperationFailed
+        }</span>
+
+        <span class="cov1" title="1">return transactions, total, nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

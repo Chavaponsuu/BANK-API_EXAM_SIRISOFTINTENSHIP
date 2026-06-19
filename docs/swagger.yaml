@@ -1,6 +1,6 @@
 basePath: /api/v1
 definitions:
-  dto.AccountResponse:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.AccountResponse:
     properties:
       account_number:
         type: string
@@ -17,7 +17,7 @@ definitions:
         example: ACTIVE
         type: string
     type: object
-  dto.BaseResponse:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse:
     properties:
       data: {}
       errors:
@@ -26,18 +26,18 @@ definitions:
       message:
         type: string
       meta:
-        $ref: '#/definitions/dto.Meta'
+        $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta'
       success:
         type: boolean
     type: object
-  dto.CloseAccountResponse:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.CloseAccountResponse:
     properties:
       account_number:
         type: string
       status:
         type: string
     type: object
-  dto.CreateAccountRequest:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.CreateAccountRequest:
     properties:
       account_type:
         enum:
@@ -59,7 +59,7 @@ definitions:
     - owner_name
     - phone_number
     type: object
-  dto.CreateExampleRequest:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.CreateExampleRequest:
     properties:
       email:
         example: john@example.com
@@ -71,12 +71,12 @@ definitions:
     - email
     - name
     type: object
-  dto.ExampleDeleteResponse:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleDeleteResponse:
     properties:
       id:
         type: integer
     type: object
-  dto.ExampleResponse:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse:
     properties:
       created_at:
         example: "2024-01-01T00:00:00Z"
@@ -94,7 +94,7 @@ definitions:
         example: "2024-01-01T00:00:00Z"
         type: string
     type: object
-  dto.Meta:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta:
     properties:
       page:
         type: integer
@@ -103,7 +103,7 @@ definitions:
       total:
         type: integer
     type: object
-  dto.PatchExampleRequest:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.PatchExampleRequest:
     properties:
       email:
         example: john@example.com
@@ -112,7 +112,7 @@ definitions:
         example: John Doe
         type: string
     type: object
-  dto.TransactionRequest:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionRequest:
     properties:
       amount:
         type: number
@@ -120,7 +120,7 @@ definitions:
         maxLength: 255
         type: string
     type: object
-  dto.TransactionResponse:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse:
     properties:
       amount:
         type: number
@@ -137,7 +137,7 @@ definitions:
       transaction_type:
         type: string
     type: object
-  dto.UpdateExampleRequest:
+  github_com_krizad_go-gin-api_internal_adapters_http_dto.UpdateExampleRequest:
     properties:
       email:
         example: john@example.com
@@ -184,23 +184,23 @@ paths:
           description: List of accounts with pagination metadata
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/dto.AccountResponse'
+                    $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.AccountResponse'
                   type: array
                 meta:
-                  $ref: '#/definitions/dto.Meta'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta'
               type: object
         "400":
           description: Invalid page or limit parameters
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Failed to get account list
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: List all accounts with pagination
       tags:
       - accounts
@@ -215,7 +215,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateAccountRequest'
+          $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.CreateAccountRequest'
       produces:
       - application/json
       responses:
@@ -223,24 +223,24 @@ paths:
           description: Account created successfully
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.AccountResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.AccountResponse'
               type: object
         "400":
           description: 'Invalid input: citizen_id must be 13 digits, account_type
             must be SAVING or CURRENT, or balance cannot be negative'
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "409":
           description: Citizen ID already exists
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Failed to create account
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Create a new account
       tags:
       - accounts
@@ -260,23 +260,23 @@ paths:
           description: Account found
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.AccountResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.AccountResponse'
               type: object
         "400":
           description: Invalid account_number format
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Account not found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Get account by account number
       tags:
       - accounts
@@ -297,27 +297,27 @@ paths:
           description: Account closed successfully
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.CloseAccountResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.CloseAccountResponse'
               type: object
         "400":
           description: Invalid account number format
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Account not found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "409":
           description: Account is already closed
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Failed to close account
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Close an account
       tags:
       - accounts
@@ -338,7 +338,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.TransactionRequest'
+          $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionRequest'
       produces:
       - application/json
       responses:
@@ -346,27 +346,27 @@ paths:
           description: Deposit successful
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.TransactionResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse'
               type: object
         "400":
           description: Amount must be greater than 0
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Account not found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "409":
           description: Account is not active or already closed
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Failed to update account balance
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Deposit money into an account
       tags:
       - transactions
@@ -397,27 +397,27 @@ paths:
           description: Transaction history with pagination
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/dto.TransactionResponse'
+                    $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse'
                   type: array
                 meta:
-                  $ref: '#/definitions/dto.Meta'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta'
               type: object
         "400":
           description: Invalid account_number format or pagination parameters
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Account not found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Failed to get transaction history
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Get transaction history of an account
       tags:
       - transactions
@@ -438,7 +438,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.TransactionRequest'
+          $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionRequest'
       produces:
       - application/json
       responses:
@@ -446,27 +446,27 @@ paths:
           description: Withdrawal successful
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.TransactionResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse'
               type: object
         "400":
           description: Insufficient balance or amount must be greater than 0
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Account not found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "409":
           description: Account is not active or already closed
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Failed to update account balance
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Withdraw money from an account
       tags:
       - transactions
@@ -480,17 +480,17 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/dto.ExampleResponse'
+                    $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse'
                   type: array
               type: object
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: List all examples
       tags:
       - examples
@@ -504,7 +504,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateExampleRequest'
+          $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.CreateExampleRequest'
       produces:
       - application/json
       responses:
@@ -512,19 +512,19 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.ExampleResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Create a new example
       tags:
       - examples
@@ -544,23 +544,23 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.ExampleDeleteResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleDeleteResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Delete an example
       tags:
       - examples
@@ -579,23 +579,23 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.ExampleResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Get an example by ID
       tags:
       - examples
@@ -614,7 +614,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.PatchExampleRequest'
+          $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.PatchExampleRequest'
       produces:
       - application/json
       responses:
@@ -622,23 +622,23 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.ExampleResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Partial update an example
       tags:
       - examples
@@ -657,7 +657,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateExampleRequest'
+          $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.UpdateExampleRequest'
       produces:
       - application/json
       responses:
@@ -665,23 +665,23 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.ExampleResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Update an example
       tags:
       - examples
@@ -701,23 +701,23 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/dto.BaseResponse'
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.ExampleResponse'
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.ExampleResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: Find example by email
       tags:
       - examples
@@ -730,11 +730,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/dto.BaseResponse'
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
       summary: API health check
       tags:
       - health
