@@ -137,3 +137,44 @@ func (t *TransactionHandler) GetTransactionHistory(c *gin.Context) {
 	dto.WithMeta(c, http.StatusOK, transactionResponses, "OK", meta)
 
 }
+
+
+
+// GetAllTransactionHistory godoc
+//
+//	@summary		Get all transaction history
+//	@description	Retrieve paginated transaction history for all accounts, ordered by newest first (created_at DESC).
+//	@tags		transactions
+//	@produce	json
+//	@param		page	query	int	false	"Page number (default: 1, min: 1)" 	default(1)
+//	@param		limit	query	int	false	"Items per page (default: 10, max: 100)" 	default(10)
+//	@success	200	{object} dto.BaseResponse{data=[]dto.TransactionResponse,meta=dto.Meta}	"Transaction history with pagination"
+//	@failure	400	{object} dto.BaseResponse	"Invalid pagination parameters"
+//	@failure	500	{object} dto.BaseResponse	"Failed to get transaction history"
+//	@router		/transactions [get]
+func (t *TransactionHandler) GetAllTransactionHistory(c *gin.Context) {
+	var query dto.Pagination
+	if err := c.ShouldBindQuery(&query); err != nil {
+		dto.Error(c, http.StatusBadRequest, err.Error())
+		return
+
+	}
+	transactions, total, err := t.service.GetAllTransaction(c, query.Page, query.Limit)
+
+	if err != nil {
+		constants.HandleError(c, err)
+		return
+	}
+	transactionResponses := make([]dto.TransactionResponse, 0, len(transactions))
+	for _, tx := range transactions {
+		transactionResponses = append(transactionResponses, *dto.ToTransactionResponse(tx))
+	}
+	meta := &dto.Meta{
+		Page:    query.Page,
+		PerPage: query.Limit,
+		Total:   total,
+	}
+
+	dto.WithMeta(c, http.StatusOK, transactionResponses, "OK", meta)
+
+}

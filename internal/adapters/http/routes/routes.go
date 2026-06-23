@@ -29,6 +29,10 @@ func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandl
 			examples.PATCH("/:id", eh.PatchExample)
 			examples.DELETE("/:id", eh.DeleteExample)
 		}
+		transactions := api.Group("/transactions")
+		{
+			transactions.GET("", th.GetAllTransactionHistory)
+		}
 
 		accounts := api.Group("/accounts")
 		{
@@ -41,6 +45,7 @@ func Setup(r *gin.Engine, eh *handlers.ExampleHandler, ah *handlers.AccountHandl
 
 			accounts.PATCH("/:account_number/close", ah.CloseAccountHandler)
 		}
+
 	}
 
 	r.GET("/health", eh.HealthCheck)

@@ -7,13 +7,13 @@ import (
 )
 
 type Config struct {
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	DBSSLMode  string
-	AppPort    string
+	DBHost      string
+	DBPort      string
+	DBUser      string
+	DBPassword  string
+	DBName      string
+	DBSSLMode   string
+	AppPort     string
 	AutoMigrate bool
 }
 

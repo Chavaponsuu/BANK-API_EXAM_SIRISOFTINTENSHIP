@@ -100,3 +100,15 @@ func (s *transactionService) GetTransactionHistory(ctx context.Context, accountN
 
 	return transactions, total, nil
 }
+
+func (s *transactionService) GetAllTransaction(ctx context.Context, page int, limit int) ([]*domain.Transaction, int, error) {
+
+	offset := (page - 1) * limit
+
+	transactions, total, err := s.transactionRepo.GetAllTransaction(ctx, limit, offset)
+	if err != nil {
+		return nil, 0, constants.ErrOperationFailed
+	}
+
+	return transactions, total, nil
+}

@@ -115,3 +115,51 @@ func (r *TransactionRepo) GetTxByAccountID(ctx context.Context, accountID int64,
 
 	return transactions, total, nil
 }
+
+// GetByAccountID ดึงประวัติธุรกรรมของบัญชี เรียงจากใหม่ไปเก่า
+func (r *TransactionRepo) GetAllTransaction(ctx context.Context, limit int, offset int) ([]*domain.Transaction, int, error) {
+	// Get total count
+	var total int
+	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM transactions`).Scan(&total)
+	if err != nil {
+		return nil, 0, fmt.Errorf("count transactions: %w", err)
+	}
+
+	// Get transactions - เรียงจากใหม่ไปเก่า (ORDER BY created_at DESC)
+	query := `SELECT id, account_id, transaction_ref, transaction_type, amount, balance_before, balance_after, description, created_at
+		FROM transactions
+		ORDER BY id DESC
+		LIMIT $1 OFFSET $2`
+
+	rows, err := r.db.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, 0, fmt.Errorf("query transactions: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	transactions := []*domain.Transaction{}
+	for rows.Next() {
+		tx := &domain.Transaction{}
+		err := rows.Scan(
+			&tx.ID,
+			&tx.AccountID,
+			&tx.TransactionRef,
+			&tx.TransactionType,
+			&tx.Amount,
+			&tx.BalanceBefore,
+			&tx.BalanceAfter,
+			&tx.Description,
+			&tx.CreatedAt,
+		)
+		if err != nil {
+			return nil, 0, fmt.Errorf("scan transaction: %w", err)
+		}
+		transactions = append(transactions, tx)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("rows error: %w", err)
+	}
+
+	return transactions, total, nil
+}
