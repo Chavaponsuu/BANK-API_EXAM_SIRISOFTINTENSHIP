@@ -11,16 +11,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/krizad/go-gin-api/constants"
 	"github.com/krizad/go-gin-api/internal/adapters/http/dto"
+	handlers "github.com/krizad/go-gin-api/internal/adapters/http/handlers"
 	"github.com/krizad/go-gin-api/internal/core/domain"
 	"github.com/krizad/go-gin-api/internal/core/ports"
-	handlers "github.com/krizad/go-gin-api/internal/adapters/http/handlers"
 )
 
 // MockTransactionService is a mock implementation of TransactionService
 type MockTransactionService struct {
-	DepositFunc              func(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error)
-	WithdrawFunc             func(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error)
+	DepositFunc               func(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error)
+	WithdrawFunc              func(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error)
 	GetTransactionHistoryFunc func(ctx context.Context, accountNumber string, page int, limit int) ([]*domain.Transaction, int, error)
+	GetAllTransactionFunc     func(ctx context.Context, page int, limit int) ([]*domain.Transaction, int, error)
 }
 
 func (m *MockTransactionService) Deposit(ctx context.Context, accountNumber string, amount float64, description string) (*domain.Transaction, error) {
@@ -44,15 +45,22 @@ func (m *MockTransactionService) GetTransactionHistory(ctx context.Context, acco
 	return []*domain.Transaction{{ID: 1, TransactionType: "DEPOSIT", Amount: 1000.0}}, 1, nil
 }
 
+func (m *MockTransactionService) GetAllTransaction(ctx context.Context, page int, limit int) ([]*domain.Transaction, int, error) {
+	if m.GetAllTransactionFunc != nil {
+		return m.GetAllTransactionFunc(ctx, page, limit)
+	}
+	return []*domain.Transaction{{ID: 1, TransactionType: "DEPOSIT", Amount: 1000.0}, {ID: 2, TransactionType: "WITHDRAW", Amount: 500.0}}, 2, nil
+}
+
 func setupTransactionRouter(service ports.TransactionService) *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	handler := handlers.NewTransactionHandler(service)
-	
+
 	router.POST("/accounts/:account_number/deposit", handler.Deposit)
 	router.POST("/accounts/:account_number/withdraw", handler.Withdraw)
 	router.GET("/accounts/:account_number/transactions", handler.GetTransactionHistory)
-	
+
 	return router
 }
 
@@ -93,10 +101,10 @@ func TestTransactionHandler_Deposit(t *testing.T) {
 			expectedStatus: http.StatusNotFound,
 		},
 		{
-			name:          "invalid request body",
-			accountNumber: "1234567890",
-			requestBody:   "invalid json",
-			mockService:   &MockTransactionService{},
+			name:           "invalid request body",
+			accountNumber:  "1234567890",
+			requestBody:    "invalid json",
+			mockService:    &MockTransactionService{},
 			expectedStatus: http.StatusBadRequest,
 		},
 	}
@@ -104,7 +112,7 @@ func TestTransactionHandler_Deposit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			router := setupTransactionRouter(tt.mockService)
-			
+
 			var body []byte
 			var err error
 			if str, ok := tt.requestBody.(string); ok {
@@ -115,13 +123,13 @@ func TestTransactionHandler_Deposit(t *testing.T) {
 					t.Fatalf("failed to marshal request body: %v", err)
 				}
 			}
-			
+
 			req, _ := http.NewRequest("POST", "/accounts/"+tt.accountNumber+"/deposit", bytes.NewBuffer(body))
 			req.Header.Set("Content-Type", "application/json")
 			w := httptest.NewRecorder()
-			
+
 			router.ServeHTTP(w, req)
-			
+
 			if w.Code != tt.expectedStatus {
 				t.Errorf("expected status %d, got %d", tt.expectedStatus, w.Code)
 			}
@@ -170,18 +178,18 @@ func TestTransactionHandler_Withdraw(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			router := setupTransactionRouter(tt.mockService)
-			
+
 			body, err := json.Marshal(tt.requestBody)
 			if err != nil {
 				t.Fatalf("failed to marshal request body: %v", err)
 			}
-			
+
 			req, _ := http.NewRequest("POST", "/accounts/"+tt.accountNumber+"/withdraw", bytes.NewBuffer(body))
 			req.Header.Set("Content-Type", "application/json")
 			w := httptest.NewRecorder()
-			
+
 			router.ServeHTTP(w, req)
-			
+
 			if w.Code != tt.expectedStatus {
 				t.Errorf("expected status %d, got %d", tt.expectedStatus, w.Code)
 			}
@@ -227,12 +235,12 @@ func TestTransactionHandler_GetTransactionHistory(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			router := setupTransactionRouter(tt.mockService)
-			
+
 			req, _ := http.NewRequest("GET", "/accounts/"+tt.accountNumber+"/transactions"+tt.queryParams, nil)
 			w := httptest.NewRecorder()
-			
+
 			router.ServeHTTP(w, req)
-			
+
 			if w.Code != tt.expectedStatus {
 				t.Errorf("expected status %d, got %d", tt.expectedStatus, w.Code)
 			}

@@ -13,15 +13,15 @@ import (
 
 // MockAccountRepository is a mock implementation of AccountRepository
 type MockAccountRepository struct {
-	CheckCitizenIDExistsFunc func(ctx context.Context, citizenID string) (bool, error)
-	BeginTxFunc              func(ctx context.Context) (*sql.Tx, error)
-	GenerateAccountNumberFunc func(ctx context.Context, tx *sql.Tx) (string, error)
-	CreateWithTxFunc          func(ctx context.Context, tx *sql.Tx, account *domain.Account) (*domain.Account, error)
-	GetByAccountNumberFunc    func(ctx context.Context, accountNumber string) (*domain.Account, error)
+	CheckCitizenIDExistsFunc       func(ctx context.Context, citizenID string) (bool, error)
+	BeginTxFunc                    func(ctx context.Context) (*sql.Tx, error)
+	GenerateAccountNumberFunc      func(ctx context.Context, tx *sql.Tx) (string, error)
+	CreateWithTxFunc               func(ctx context.Context, tx *sql.Tx, account *domain.Account) (*domain.Account, error)
+	GetByAccountNumberFunc         func(ctx context.Context, accountNumber string) (*domain.Account, error)
 	GetByAccountNumberWithLockFunc func(ctx context.Context, tx *sql.Tx, accountNumber string) (*domain.Account, error)
-	GetByAccountListFunc      func(ctx context.Context, page int, limit int) ([]*domain.Account, int, error)
-	UpdateBalanceWithTxFunc  func(ctx context.Context, tx *sql.Tx, accountID int64, newBalance float64) error
-	UpdateStatusFunc         func(ctx context.Context, tx *sql.Tx, accountNumber string, status string) error
+	GetByAccountListFunc           func(ctx context.Context, page int, limit int) ([]*domain.Account, int, error)
+	UpdateBalanceWithTxFunc        func(ctx context.Context, tx *sql.Tx, accountID int64, newBalance float64) error
+	UpdateStatusFunc               func(ctx context.Context, tx *sql.Tx, accountNumber string, status string) error
 }
 
 func (m *MockAccountRepository) CheckCitizenIDExists(ctx context.Context, citizenID string) (bool, error) {
@@ -89,8 +89,9 @@ func (m *MockAccountRepository) UpdateStatus(ctx context.Context, tx *sql.Tx, ac
 
 // MockTransactionRepository is a mock implementation of TransactionRepository
 type MockTransactionRepository struct {
-	CreateWithTxFunc     func(ctx context.Context, tx *sql.Tx, transaction *domain.Transaction) (*domain.Transaction, error)
-	GetTxByAccountIDFunc func(ctx context.Context, accountID int64, page int, limit int) ([]*domain.Transaction, int, error)
+	CreateWithTxFunc      func(ctx context.Context, tx *sql.Tx, transaction *domain.Transaction) (*domain.Transaction, error)
+	GetTxByAccountIDFunc  func(ctx context.Context, accountID int64, page int, limit int) ([]*domain.Transaction, int, error)
+	GetAllTransactionFunc func(ctx context.Context, limit int, offset int) ([]*domain.Transaction, int, error)
 }
 
 func (m *MockTransactionRepository) CreateWithTx(ctx context.Context, tx *sql.Tx, transaction *domain.Transaction) (*domain.Transaction, error) {
@@ -107,6 +108,13 @@ func (m *MockTransactionRepository) GenerateTransactionRef(ctx context.Context, 
 func (m *MockTransactionRepository) GetTxByAccountID(ctx context.Context, accountID int64, page int, limit int) ([]*domain.Transaction, int, error) {
 	if m.GetTxByAccountIDFunc != nil {
 		return m.GetTxByAccountIDFunc(ctx, accountID, page, limit)
+	}
+	return []*domain.Transaction{}, 0, nil
+}
+
+func (m *MockTransactionRepository) GetAllTransaction(ctx context.Context, limit int, offset int) ([]*domain.Transaction, int, error) {
+	if m.GetAllTransactionFunc != nil {
+		return m.GetAllTransactionFunc(ctx, limit, offset)
 	}
 	return []*domain.Transaction{}, 0, nil
 }
