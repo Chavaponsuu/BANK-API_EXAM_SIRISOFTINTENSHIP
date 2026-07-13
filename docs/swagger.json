@@ -937,6 +937,72 @@
                     }
                 }
             }
+        },
+        "/transactions": {
+            "get": {
+                "description": "Retrieve paginated transaction history for all accounts, ordered by newest first (created_at DESC).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get all transaction history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (default: 1, min: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Items per page (default: 10, max: 100)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction history with pagination",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get transaction history",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

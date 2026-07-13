@@ -737,4 +737,46 @@ paths:
       summary: API health check
       tags:
       - health
+  /transactions:
+    get:
+      description: Retrieve paginated transaction history for all accounts, ordered
+        by newest first (created_at DESC).
+      parameters:
+      - default: 1
+        description: 'Page number (default: 1, min: 1)'
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 'Items per page (default: 10, max: 100)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Transaction history with pagination
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.TransactionResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.Meta'
+              type: object
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
+        "500":
+          description: Failed to get transaction history
+          schema:
+            $ref: '#/definitions/github_com_krizad_go-gin-api_internal_adapters_http_dto.BaseResponse'
+      summary: Get all transaction history
+      tags:
+      - transactions
 swagger: "2.0"

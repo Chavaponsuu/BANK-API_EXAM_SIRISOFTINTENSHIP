@@ -138,8 +138,6 @@ func (t *TransactionHandler) GetTransactionHistory(c *gin.Context) {
 
 }
 
-
-
 // GetAllTransactionHistory godoc
 //
 //	@summary		Get all transaction history
